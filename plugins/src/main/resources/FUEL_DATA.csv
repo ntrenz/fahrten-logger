@@ -1,2 +1,3 @@
-id, fuel_type, amount
-1, E5, 10.2
+'AMOUNT','FUELTYPE','ID'
+'10.2','E5','1'
+'22.2','E10','2'

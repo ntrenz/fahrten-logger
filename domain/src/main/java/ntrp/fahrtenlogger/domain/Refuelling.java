@@ -7,6 +7,15 @@ public class Refuelling {
     private final FuelTypes fuelType;
     private final double amount;
 
+    @Override
+    public String toString() {
+        return "Refuelling{" +
+                "id=" + id +
+                ", fuelType=" + fuelType +
+                ", amount=" + amount +
+                '}';
+    }
+
     public int getId() {
         return id;
     }

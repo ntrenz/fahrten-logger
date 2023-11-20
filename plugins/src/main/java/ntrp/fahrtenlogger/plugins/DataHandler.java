@@ -1,7 +1,9 @@
 package ntrp.fahrtenlogger.plugins;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,9 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import ntrp.fahrtenlogger.domain.Refuelling;
 import ntrp.fahrtenlogger.domain.data.FuelTypes;
 
@@ -48,9 +55,19 @@ public class DataHandler {
                     .withType(c)
                     .build();
             for (FuelRecordBean b : cb) {
-                out.add(new Refuelling(b.getId(), FuelTypes.valueOf(b.getFuelType()), b.getAmount()));
+                out.add(new Refuelling(b.getId(), FuelTypes.valueOf(b.getFuelType().trim()), b.getAmount()));
             }
         }
         return out;
+    }
+
+    public void beanWriter(List<Refuelling> data) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+        try (Writer writer = new FileWriter(String.valueOf(fuel_data_path))) {
+            StatefulBeanToCsv<Refuelling> sbc = new StatefulBeanToCsvBuilder<Refuelling>(writer)
+                    .withQuotechar('\'')
+                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                    .build();
+            sbc.write(data);
+        }
     }
 }

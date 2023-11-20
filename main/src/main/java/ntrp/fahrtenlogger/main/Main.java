@@ -5,6 +5,7 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 import ntrp.fahrtenlogger.plugins.DataHandler;
 import ntrp.fahrtenlogger.plugins.FuelRecordBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -12,7 +13,8 @@ public class Main {
         DataHandler d = new DataHandler();
 
         List<Refuelling> refuelling = d.beanBuilder(ntrp.fahrtenlogger.plugins.FuelRecordBean.class);
+        refuelling.iterator().forEachRemaining( System.out::println );
 
-        System.out.println(refuelling);
+        d.beanWriter(refuelling);
     }
 }
