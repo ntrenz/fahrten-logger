@@ -1,4 +1,5 @@
 module plugins {
     requires adapters;
-    exports ntrp.fahrtenlogger.plugins;
+    requires com.opencsv;
+//    exports ntrp.fahrtenlogger.plugins;
 }
