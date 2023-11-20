@@ -1,10 +1,16 @@
-package ntrp.fahrtenlogger.ValueObjects;
+package ntrp.fahrtenlogger.domain.ValueObjects;
 
 import java.util.Objects;
 
 public class Euro {
-
+    /**
+     * Currency Code of Euro {@value}
+     */
     private static final char CURRENCY_CODE = '€';
+
+    /**
+     * Amount of this ValueObject as {@code double}
+     */
     private final double amount;
 
     public Euro(double amount) {
@@ -14,8 +20,31 @@ public class Euro {
         this.amount = amount;
     }
 
+    /**
+     * Gibt die Menge dieses Objekts zurück.
+     * @author robin13091
+     * @return {@code double (#{@amount})}
+     */
     public double getAmount() {
         return amount;
+    }
+
+    /**
+     * Addiert ein Euro Objekt auf dieses drauf.
+     * @param euro Second Euro Object
+     * @return Euro
+     */
+    public Euro addAmount(Euro euro) {
+        return new Euro(this.amount + euro.getAmount());
+    }
+
+    /**
+     * Subtrahiert ein Euro Objekt von diesem.
+     * @param euro
+     * @return Euro
+     */
+    public Euro subAmount(Euro euro) {
+        return new Euro(this.amount - euro.getAmount());
     }
 
     @Override

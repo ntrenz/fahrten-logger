@@ -1,4 +1,4 @@
-package ntrp.fahrtenlogger.ValueObjects;
+package ntrp.fahrtenlogger.domain.ValueObjects;
 
 import java.util.Objects;
 
