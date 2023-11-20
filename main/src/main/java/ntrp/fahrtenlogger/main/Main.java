@@ -1,5 +1,6 @@
 package ntrp.fahrtenlogger.main;
 
+import com.opencsv.bean.CsvToBean;
 import ntrp.fahrtenlogger.domain.Refuelling;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 import ntrp.fahrtenlogger.plugins.DataHandler;
@@ -12,9 +13,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         DataHandler d = new DataHandler();
 
-        List<Refuelling> refuelling = d.beanBuilder(ntrp.fahrtenlogger.plugins.FuelRecordBean.class);
+        List<FuelRecordBean> refuelling = d.beanBuilder(ntrp.fahrtenlogger.plugins.FuelRecordBean.class);
         refuelling.iterator().forEachRemaining( System.out::println );
 
-        d.beanWriter(refuelling);
+//        d.beanWriter(refuelling);
     }
 }

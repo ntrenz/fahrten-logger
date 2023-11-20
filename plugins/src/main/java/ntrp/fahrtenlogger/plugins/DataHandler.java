@@ -20,7 +20,6 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import ntrp.fahrtenlogger.domain.Refuelling;
-import ntrp.fahrtenlogger.domain.data.FuelTypes;
 
 public class DataHandler {
     private Path fuel_data_path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
@@ -48,17 +47,16 @@ public class DataHandler {
         }
     }
 
-    public List<Refuelling> beanBuilder(Class<FuelRecordBean> c) throws Exception {
-        List<Refuelling> out = new ArrayList<>();
+    public List<FuelRecordBean> beanBuilder(Class<FuelRecordBean> c) throws Exception {
         try (Reader reader = Files.newBufferedReader(fuel_data_path)) {
+            //            for (FuelRecordBean b : cb) {
+//                out.add(new Refuelling(b.getId(), b.getFuelType(), b.getAmount()));
+//            }
             CsvToBean<FuelRecordBean> cb = new CsvToBeanBuilder<FuelRecordBean>(reader)
                     .withType(c)
                     .build();
-            for (FuelRecordBean b : cb) {
-                out.add(new Refuelling(b.getId(), FuelTypes.valueOf(b.getFuelType().trim()), b.getAmount()));
-            }
+            return cb.parse().stream().toList();
         }
-        return out;
     }
 
     public void beanWriter(List<Refuelling> data) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {

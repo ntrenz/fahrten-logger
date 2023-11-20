@@ -1,14 +1,40 @@
 package ntrp.fahrtenlogger.plugins;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
+import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
+import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
+import ntrp.fahrtenlogger.domain.data.FuelTypes;
+
+import java.time.LocalDate;
 
 public class FuelRecordBean extends CsvBean {
     @CsvBindByName
     private int id;
-    @CsvBindByName(column = "fuel_type")
-    private String fuelType;
-    @CsvBindByName
-    private double amount;
+    @CsvCustomBindByName(column = "fuel_type", converter = ntrp.fahrtenlogger.plugins.FuelTypeEnumConverter.class)
+    private FuelTypes fuelType;
+    @CsvCustomBindByName(column = "amount", converter = ntrp.fahrtenlogger.plugins.LiterConverter.class)
+    private Liter amount;
+    @CsvCustomBindByName(column = "price_per_liter", converter = ntrp.fahrtenlogger.plugins.EuroConverter.class)
+    private Euro pricePerLiter;
+    @CsvCustomBindByName(column = "date", converter = ntrp.fahrtenlogger.plugins.DateConverter.class)
+    private LocalDate date;
+
+    public Euro getPricePerLiter() {
+        return pricePerLiter;
+    }
+
+    public void setPricePerLiter(Euro pricePerLiter) {
+        this.pricePerLiter = pricePerLiter;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
     public int getId() {
         return id;
@@ -18,19 +44,30 @@ public class FuelRecordBean extends CsvBean {
         this.id = id;
     }
 
-    public String getFuelType() {
+    public FuelTypes getFuelType() {
         return fuelType;
     }
 
-    public void setFuelType(String fuel_type) {
+    public void setFuelType(FuelTypes fuel_type) {
         this.fuelType = fuel_type;
     }
 
-    public double getAmount() {
+    public Liter getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(Liter amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public String toString() {
+        return "FuelRecordBean{" +
+                "id=" + id +
+                ", fuelType=" + fuelType +
+                ", amount=" + amount +
+                ", pricePerLiter=" + pricePerLiter +
+                ", date=" + date +
+                '}';
     }
 }
