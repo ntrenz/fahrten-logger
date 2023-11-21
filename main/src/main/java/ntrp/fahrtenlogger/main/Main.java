@@ -1,21 +1,19 @@
 package ntrp.fahrtenlogger.main;
 
-import com.opencsv.bean.CsvToBean;
-import ntrp.fahrtenlogger.domain.Refuelling;
-import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
+import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.plugins.DataHandler;
-import ntrp.fahrtenlogger.plugins.FuelRecordBean;
+import ntrp.fahrtenlogger.plugins.TripBean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        DataHandler d = new DataHandler();
+        DataHandler dataHandler = new DataHandler();
 
-        List<FuelRecordBean> refuelling = d.beanBuilder(ntrp.fahrtenlogger.plugins.FuelRecordBean.class);
-        refuelling.iterator().forEachRemaining( System.out::println );
+        List<Trip> trips = dataHandler.getAllTrips();
+        for(Trip trip : trips) System.out.println(trip.toString());
 
-//        d.beanWriter(refuelling);
+//        List<TripBean> trips = dataHandler.buildBean(TripBean.class);
+//        trips.iterator().forEachRemaining(c -> System.out.println(c.toString()));
     }
 }

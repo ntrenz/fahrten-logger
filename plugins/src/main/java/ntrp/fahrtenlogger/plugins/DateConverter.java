@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class DateConverter extends AbstractBeanField<FuelRecordBean, String>  {
     @Override
-    protected Object convert(String value) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
+    protected Object convert(String value) throws CsvDataTypeMismatchException {
         try {
             return LocalDate.parse(value.trim());
         } catch (RuntimeException e) {
