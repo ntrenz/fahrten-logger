@@ -3,4 +3,5 @@ module plugins {
     requires domain;
     requires com.opencsv;
     exports ntrp.fahrtenlogger.plugins;
+    exports ntrp.fahrtenlogger.plugins.converter;
 }

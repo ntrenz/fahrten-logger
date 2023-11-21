@@ -49,9 +49,6 @@ public class DataHandler {
 
     public List<FuelRecordBean> beanBuilder(Class<FuelRecordBean> c) throws Exception {
         try (Reader reader = Files.newBufferedReader(fuel_data_path)) {
-            //            for (FuelRecordBean b : cb) {
-//                out.add(new Refuelling(b.getId(), b.getFuelType(), b.getAmount()));
-//            }
             CsvToBean<FuelRecordBean> cb = new CsvToBeanBuilder<FuelRecordBean>(reader)
                     .withType(c)
                     .build();
