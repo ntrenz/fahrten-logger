@@ -1,12 +1,28 @@
 package ntrp.fahrtenlogger.main;
 
-import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
+import ntrp.fahrtenlogger.adapters.interpreter.CommandInterpreter;
+import ntrp.fahrtenlogger.adapters.interpreter.ExitInterpreter;
+import ntrp.fahrtenlogger.plugins.io.UserInputHandler;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hallo");
+        // - init -
 
-        Kilometer km = new Kilometer(10);
-        System.out.println(km);
+
+        // - main loop -
+        mainLoop();
+
+        // speichere Daten
+    }
+
+    private static void mainLoop() {
+        UserInputHandler u = new UserInputHandler();
+        CommandInterpreter interpreter;
+        do {
+            String input = u.receiveUserInput();
+            interpreter = u.handleUserInput(input);
+            interpreter.interpretCommands();
+            interpreter.executeCommands();
+        } while (!(interpreter instanceof ExitInterpreter));
     }
 }
