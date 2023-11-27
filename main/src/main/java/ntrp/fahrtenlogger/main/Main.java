@@ -21,8 +21,12 @@ public class Main {
         do {
             String input = u.receiveUserInput();
             interpreter = u.handleUserInput(input);
-            interpreter.interpretCommands();
-            interpreter.executeCommands();
+            try {
+                interpreter.parseCommands();
+                interpreter.executeCommands();
+            } catch (Exception e) {
+                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e);
+            }
         } while (!(interpreter instanceof ExitInterpreter));
     }
 }
