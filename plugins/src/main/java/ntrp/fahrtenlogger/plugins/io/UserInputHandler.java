@@ -1,6 +1,7 @@
 package ntrp.fahrtenlogger.plugins.io;
 
 import ntrp.fahrtenlogger.adapters.interpreter.*;
+import ntrp.fahrtenlogger.plugins.DataHandler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Scanner;
 
 public class UserInputHandler {
     private final Scanner scanner;
-    private String current_command;
 
     public UserInputHandler() {
         scanner = new Scanner(System.in);
@@ -51,7 +51,7 @@ public class UserInputHandler {
                 return new HelpInterpreter(commands_list.subList(1, commands_list.size()));
             }
             case "exit" -> {
-                return new ExitInterpreter(commands_list.subList(1, commands_list.size()));
+                return new ExitInterpreter(commands_list.subList(1, commands_list.size()), new DataHandler()); //TODO: use exisitng data Handler object
             }
             default -> {
                 return new UnknownInterpreter(commands_list.get(0));

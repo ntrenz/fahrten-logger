@@ -2,22 +2,24 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 
 import java.util.List;
 
-public class ExitInterpreter implements CommandInterpreter {
-    private final List<String> commands;
-    private Actions action;
+import ntrp.fahrtenlogger.adapters.DataSaver;
 
-    public ExitInterpreter(List<String> args) {
-        System.out.println("My arguments are:");
-        args.forEach(System.out::println);
-        this.commands = args;
+public class ExitInterpreter extends CommandInterpreter {
+    DataSaver dataHandler;
+    public ExitInterpreter(List<String> args, DataSaver dataHandler) {
+        super(args);
+        this.dataHandler = dataHandler;
     }
+
     @Override
-    public void interpretCommands() {
-        // Todo: should be empty or something like exit has no commands
-    }
+    public void parseCommands() { }
 
     @Override
     public void executeCommands() {
-        // Todo: save all data. After this, the application is stopped.
+        dataHandler.saveAllRepositories();
+    }
+
+    public static String getHelp() {
+        return "Speichert alle aktiven Daten ab und beendet das Programm.";
     }
 }
