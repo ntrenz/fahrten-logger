@@ -2,23 +2,50 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 
 import java.util.List;
 
-public class HelpInterpreter implements CommandInterpreter {
-    private final List<String> commands;
-    private Actions action;
+public class HelpInterpreter extends CommandInterpreter {
+    private String command = "";
 
     public HelpInterpreter(List<String> args) {
-        System.out.println("My arguments are:");
-        args.forEach(System.out::println);
-        this.commands = args;
+        super(args);
+    }
+
+    public String getCommand() {
+        return command;
     }
 
     @Override
-    public void interpretCommands() {
-
+    public void parseCommands() {
+        if (arguments_list.size() > 0) {
+            this.command = arguments_list.get(0);
+        }
     }
 
     @Override
     public void executeCommands() {
+        if (command.isEmpty()) {
+            System.out.println(HelpInterpreter.getHelp());
+        } else {
+            switch (command) {
+                case "refuel" -> {
+                    System.out.println(RefuelInterpreter.getHelp());
+                }
+                case "trip" -> {
+                    System.out.println(TripInterpreter.getHelp());
+                }
+                case "exit" -> {
+                    System.out.println(ExitInterpreter.getHelp());
+                }
+                case "help" -> {
+                    System.out.println(HelpInterpreter.getHelp());
+                }
+                default -> {
+                    System.out.println(CommandInterpreter.getHelp());
+                }
+            }
+        }
+    }
 
+    public static String getHelp() {
+        return "Das ist der Hilfe-Befehl. Schreibe 'help <command>', um mehr Informationen zu einem bestimmten Befehl zu erhalten. Vorhandene Befehle: \ntrip\nrefuel\nexit\nhelp";
     }
 }

@@ -2,16 +2,15 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 
 import java.util.List;
 
-public class UnknownInterpreter implements CommandInterpreter {
-    private final String input;
-
+public class UnknownInterpreter extends CommandInterpreter {
+    private String input;
     public UnknownInterpreter(String input) {
-        this.input = input;
+        super(List.of(input));
     }
 
     @Override
-    public void interpretCommands() {
-
+    public void parseCommands() {
+        this.input = this.arguments_list.get(0);
     }
 
     @Override
