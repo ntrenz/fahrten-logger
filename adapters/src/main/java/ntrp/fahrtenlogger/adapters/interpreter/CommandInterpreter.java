@@ -1,15 +1,53 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
+import java.util.List;
+
 /**
- * Interface for all Interpreter Classes. Defines an action attribute {@code action} and a method {@code handleCommands} to handle the commands.
- *
- * @implNote Each class should implement each applicable attribute and its getters.
+ * Superclass for all Interpreter Classes. Defines an action attribute {@code action} and a method {@code handleCommands} to handle the commands.
  */
-public interface CommandInterpreter {
+public abstract class CommandInterpreter {
+    final List<String> arguments_list;
+    Actions action;
+
+    protected CommandInterpreter(List<String> arguments_list) {
+        this.arguments_list = arguments_list;
+    }
+
+    /**
+     * Parses all arguments given to a command.
+     *
+     * @throws IllegalArgumentException - Argument not found
+     */
+    public abstract void parseCommands() throws IllegalArgumentException;
+
     /**
      * Handles the input commands an executes the appropriate methods of the application.
      */
-    void interpretCommands();
+    public abstract void executeCommands();
 
-    void executeCommands();
+    /**
+     * Returns the help information of the corresponding command.
+     * @return help description
+     */
+    public static String getHelp() {
+        return "Hilfe! 😱";
+    };
+
+    /**
+     * Sets the attribute {@code action} to the corresponding action. If argument cannot be parsed, an {@link IllegalArgumentException} is thrown.
+     *
+     * @throws IllegalArgumentException when action is not defined
+     * @param command the command holding Action information
+     */
+    public void parseAction(String command) throws IllegalArgumentException {
+        if (command.equals("n") || command.equals("new")) {
+            this.action = Actions.NEW;
+        } else if (command.equals("m") || command.equals("modify")) {
+            this.action = Actions.MODIFY;
+        } else if (command.equals("d") || command.equals("delete")) {
+            this.action = Actions.DELETE;
+        } else {
+            throw new IllegalArgumentException("Action nicht definiert: " + command);
+        }
+    }
 }
