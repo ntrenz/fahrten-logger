@@ -10,7 +10,10 @@ public abstract class CommandInterpreter {
     Actions action;
 
     protected CommandInterpreter(List<String> arguments_list) {
-        this.arguments_list = arguments_list;
+        if (arguments_list.equals(null))
+            this.arguments_list = List.of();
+        else
+            this.arguments_list = arguments_list;
     }
 
     /**
@@ -40,14 +43,11 @@ public abstract class CommandInterpreter {
      * @param command the command holding Action information
      */
     public void parseAction(String command) throws IllegalArgumentException {
-        if (command.equals("n") || command.equals("new")) {
-            this.action = Actions.NEW;
-        } else if (command.equals("m") || command.equals("modify")) {
-            this.action = Actions.MODIFY;
-        } else if (command.equals("d") || command.equals("delete")) {
-            this.action = Actions.DELETE;
-        } else {
-            throw new IllegalArgumentException("Action nicht definiert: " + command);
+        switch (command) {
+            case "n", "new" -> this.action = Actions.NEW;
+            case "m", "modify" -> this.action = Actions.MODIFY;
+            case "d", "delete" -> this.action = Actions.DELETE;
+            default -> throw new IllegalArgumentException("Action nicht definiert: " + command);
         }
     }
 }
