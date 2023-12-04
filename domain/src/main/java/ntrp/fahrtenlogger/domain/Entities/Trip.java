@@ -77,6 +77,6 @@ public class Trip {
 
     @Override
     public String toString() {
-        return String.format("Trip %d on %d from %s to %s (%.2f km)", id, date, from, to, distance);
+        return String.format("Trip %d on %d from %s to %s (%.1f km)", id, date, from, to, distance);
     }
 }
