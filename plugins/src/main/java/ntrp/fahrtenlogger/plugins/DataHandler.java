@@ -32,37 +32,32 @@ public class DataHandler {
 
     public DataHandler() { }
 
-    public List<Refuelling> readFuelData() {
-        List<Refuelling> refuellings = new ArrayList<Refuelling>();
-        try (Reader reader = Files.newBufferedReader(this.fuel_data_path)) {
-            try (CSVReader csvReader = new CSVReader(reader)) {
-                for (String[] fuelRecord : csvReader.readAll()) {
-
-                }
-
-                return refuellings;
-            }
-        } catch (IOException | CsvException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<FuelRecordBean> beanBuilder(Class<FuelRecordBean> c) throws Exception {
-        try (Reader reader = Files.newBufferedReader(fuel_data_path)) {
-            CsvToBean<FuelRecordBean> cb = new CsvToBeanBuilder<FuelRecordBean>(reader)
-                    .withType(c)
+    /**
+     * Generic implementation of a CSV reader accepting every class T implementing the interface {@link CsvBean}.
+     * @param beanObject class of data type
+     * @return List of data objects of type T
+     * @param <T>
+     * @throws Exception TODO
+     */
+    public <T extends CsvBean> List<T> beanBuilder(Class<T> beanObject) throws Exception {
+        try (Reader reader = Files.newBufferedReader(T.getPath())) {
+            CsvToBean<T> cb = new CsvToBeanBuilder<T>(reader)
+                    .withType(beanObject)
                     .build();
             return cb.parse().stream().toList();
         }
     }
 
-    public void beanWriter(List<Refuelling> data) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        try (Writer writer = new FileWriter(String.valueOf(fuel_data_path))) {
-            StatefulBeanToCsv<Refuelling> sbc = new StatefulBeanToCsvBuilder<Refuelling>(writer)
+    public <T extends CsvBean> boolean beanWriter(List<T> beanObjects) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+        try (Writer writer = new FileWriter(String.valueOf(T.getPath()))) {
+            StatefulBeanToCsv<CsvBean> sbc = new StatefulBeanToCsvBuilder<CsvBean>(writer)
                     .withQuotechar('\'')
                     .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                     .build();
-            sbc.write(data);
+            sbc.write((CsvBean) beanObjects);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }
