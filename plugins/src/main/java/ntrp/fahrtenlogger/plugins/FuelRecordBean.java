@@ -7,9 +7,13 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelTypes;
 import ntrp.fahrtenlogger.plugins.converter.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 public class FuelRecordBean extends CsvBean {
+    static Path path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
+
     @CsvBindByName
     private int id;
     @CsvCustomBindByName(column = "fuel_type", converter = FuelTypeEnumConverter.class)
