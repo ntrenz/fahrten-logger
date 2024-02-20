@@ -1,0 +1,3 @@
+id, fuel_type, amount, price_per_liter, date
+1, E5, 30, 1.3, 2024-01-10
+2, E10, 20, 1.4, 2024-01-20
