@@ -5,4 +5,6 @@ module plugins {
     requires java.sql;
     exports ntrp.fahrtenlogger.plugins;
     exports ntrp.fahrtenlogger.plugins.converter;
+    requires application;
+    exports ntrp.fahrtenlogger.plugins.io;
 }

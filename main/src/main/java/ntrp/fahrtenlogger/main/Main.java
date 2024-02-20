@@ -1,24 +1,32 @@
 package ntrp.fahrtenlogger.main;
 
-import com.opencsv.bean.CsvToBean;
-import ntrp.fahrtenlogger.domain.Refuelling;
-import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
-import ntrp.fahrtenlogger.domain.data.FuelTypes;
-import ntrp.fahrtenlogger.plugins.CsvBean;
-import ntrp.fahrtenlogger.plugins.DataHandler;
-import ntrp.fahrtenlogger.plugins.FuelRecordBean;
-
-import java.util.ArrayList;
-import java.util.List;
+import ntrp.fahrtenlogger.adapters.interpreter.CommandInterpreter;
+import ntrp.fahrtenlogger.adapters.interpreter.ExitInterpreter;
+import ntrp.fahrtenlogger.plugins.io.UserInputHandler;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        DataHandler d = new DataHandler();
+    public static void main(String[] args) {
+        // - init -
 
-        List<FuelRecordBean> refuelling = d.beanBuilder(FuelRecordBean.class);
-        refuelling.get(1).setFuelType(FuelTypes.E5);
-        refuelling.iterator().forEachRemaining( System.out::println );
 
-        d.beanWriter(refuelling);
+        // - main loop -
+        mainLoop();
+
+        // speichere Daten
+    }
+
+    private static void mainLoop() {
+        UserInputHandler u = new UserInputHandler();
+        CommandInterpreter interpreter;
+        do {
+            String input = u.receiveUserInput();
+            interpreter = u.handleUserInput(input);
+            try {
+                interpreter.parseCommands();
+                interpreter.executeCommands();
+            } catch (Exception e) {
+                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e);
+            }
+        } while (!(interpreter instanceof ExitInterpreter));
     }
 }
