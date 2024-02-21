@@ -1,5 +1,6 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
+import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
