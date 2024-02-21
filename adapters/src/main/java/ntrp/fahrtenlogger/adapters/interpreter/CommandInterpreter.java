@@ -19,9 +19,30 @@ public abstract class CommandInterpreter {
     /**
      * Parses all arguments given to a command.
      *
-     * @throws IllegalArgumentException - Argument not found
+     * @throws IllegalArgumentException - Action or Arguments wrong or missing
      */
     public abstract void parseCommands() throws IllegalArgumentException;
+
+    /**
+     * Parses arguments for the command 'NEW'
+     * 
+     * @throws IllegalArgumentException - Not enough arguments
+     */
+    protected abstract void parseNewCommands() throws IllegalArgumentException;
+
+    /**
+     * Parses arguments for the command 'MODIFY'
+     * 
+     * @throws IllegalArgumentException - Not enough arguments
+     */
+    protected abstract void parseModifyCommands() throws IllegalArgumentException;
+    
+    /**
+     * Parses arguments for the command 'DELETE'
+     * 
+     * @throws IllegalArgumentException - Not enough arguments
+     */
+    protected abstract void parseDeleteCommands() throws IllegalArgumentException;
 
     /**
      * Handles the input commands an executes the appropriate methods of the application.

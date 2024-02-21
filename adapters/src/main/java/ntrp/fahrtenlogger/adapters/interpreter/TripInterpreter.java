@@ -10,6 +10,7 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 public class TripInterpreter extends CommandInterpreter {
     private final int num_of_mandatory_arguments = 3;
+    private final int num_of_mandatory_arguments_del = 4;
     private Place from_place;
     private Place to_place;
     private Kilometer distance = new Kilometer(0);
@@ -39,10 +40,26 @@ public class TripInterpreter extends CommandInterpreter {
     public void parseCommands() {
         // command-structure:
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
-        // TODO: Error-Behandlung
+        parseAction(arguments_list.get(0));
+        switch (this.action) {
+            case NEW -> {
+                parseNewCommands();
+            }
+            case MODIFY -> {
+                parseModifyCommands();
+            }
+            case DELETE -> {
+                parseDeleteCommands();
+            }
+        }
+        
+    }
+
+    @Override
+    protected void parseNewCommands() throws IllegalArgumentException {
         if (arguments_list.size() < num_of_mandatory_arguments)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
-        parseAction(arguments_list.get(0));
+        
         this.from_place = new Place(arguments_list.get(1));
         this.to_place = new Place(arguments_list.get(2));
 
@@ -53,6 +70,19 @@ public class TripInterpreter extends CommandInterpreter {
         }
     }
 
+    @Override
+    protected void parseModifyCommands() throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Unimplemented method 'parseModifyCommands'");
+    }
+
+    @Override
+    protected void parseDeleteCommands() throws IllegalArgumentException {
+        if (arguments_list.size() < num_of_mandatory_arguments_del)
+            throw new IllegalArgumentException("Nicht genügend Parameter!");
+        this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        this.from_place = new Place(arguments_list.get(2));
+        this.to_place = new Place(arguments_list.get(3));
+    }
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));

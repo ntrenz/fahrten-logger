@@ -2,7 +2,8 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
-import ntrp.fahrtenlogger.domain.data.FuelTypes;
+import ntrp.fahrtenlogger.domain.data.FuelType;
+import ntrp.fahrtenlogger.adapters.interpreter.Actions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -11,10 +12,12 @@ import java.util.Locale;
 
 public class RefuelInterpreter extends CommandInterpreter {
     private final int num_of_mandatory_arguments = 3;
+    private final int num_of_mandatory_arguments_del = 2;
     private Liter amount;
     private Euro price_per_liter;
-    private FuelTypes fuel_type = FuelTypes.E5; // TODO: sollte das global definiert werden?
+    private FuelType fuel_type = FuelType.E5;
     private LocalDate date = LocalDate.now();
+    private GasStation gasStation;
 
     public RefuelInterpreter(List<String> args) {
         super(args);
@@ -24,10 +27,25 @@ public class RefuelInterpreter extends CommandInterpreter {
     public void parseCommands() {
         // command structure:
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
-        // TODO: Error-Behandlung
+        parseAction(arguments_list.get(0));
+        switch (this.action) {
+            case NEW -> {
+                parseNewCommands();
+            }
+            case MODIFY -> {
+                parseModifyCommands();
+            }
+            case DELETE -> {
+                parseDeleteCommands();
+            }
+        }
+    }
+
+    @Override
+    protected void parseNewCommands() throws IllegalArgumentException {
         if (arguments_list.size() < num_of_mandatory_arguments)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
-        parseAction(arguments_list.get(0));
+        
         this.amount = new Liter(Double.parseDouble(arguments_list.get(1)));
         this.price_per_liter = new Euro(Double.parseDouble(arguments_list.get(2)));
 
@@ -38,6 +56,18 @@ public class RefuelInterpreter extends CommandInterpreter {
         }
     }
 
+    @Override
+    protected void parseModifyCommands() throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Unimplemented method 'parseModifyCommands'");
+    }
+
+    @Override
+    protected void parseDeleteCommands() throws IllegalArgumentException {
+        if (arguments_list.size() < num_of_mandatory_arguments_del)
+            throw new IllegalArgumentException("Nicht genügend Parameter!");
+        
+        this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+    }
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
