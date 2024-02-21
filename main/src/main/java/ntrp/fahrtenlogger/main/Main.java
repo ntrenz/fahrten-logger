@@ -11,8 +11,6 @@ public class Main {
 
         // - main loop -
         mainLoop();
-
-        // speichere Daten
     }
 
     private static void mainLoop() {
