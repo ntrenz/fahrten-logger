@@ -48,4 +48,19 @@ public class HelpInterpreter extends CommandInterpreter {
     public static String getHelp() {
         return "Das ist der Hilfe-Befehl. Schreibe 'help <command>', um mehr Informationen zu einem bestimmten Befehl zu erhalten. Vorhandene Befehle: \ntrip\nrefuel\nexit\nhelp";
     }
+
+    @Override
+    protected void parseNewCommands() throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Unimplemented method 'parseNewCommands'");
+    }
+
+    @Override
+    protected void parseModifyCommands() throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Unimplemented method 'parseModifyCommands'");
+    }
+
+    @Override
+    protected void parseDeleteCommands() throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Unimplemented method 'parseDeleteCommands'");
+    }
 }

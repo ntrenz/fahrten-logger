@@ -1,5 +1,5 @@
 module plugins {
-    requires adapters;
+    requires transitive adapters;
     requires domain;
     requires com.opencsv;
     requires java.sql;
