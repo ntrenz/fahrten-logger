@@ -62,7 +62,7 @@ public class TripInterpreter extends CommandInterpreter {
         
         this.from_place = new Place(arguments_list.get(1));
         this.to_place = new Place(arguments_list.get(2));
-
+        
         int index = num_of_mandatory_arguments;
         while (arguments_list.size() > index) {
             parseOptionalArguments(index);
@@ -83,6 +83,12 @@ public class TripInterpreter extends CommandInterpreter {
         this.from_place = new Place(arguments_list.get(2));
         this.to_place = new Place(arguments_list.get(3));
     }
+
+    /**
+     * Parses the optional arguments for the action 'NEW'
+     * 
+     * @param index - the starting index of optional arguments
+     */
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));

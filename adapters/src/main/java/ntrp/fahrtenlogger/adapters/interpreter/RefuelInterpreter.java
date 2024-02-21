@@ -88,6 +88,12 @@ public class RefuelInterpreter extends CommandInterpreter {
         
         this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
     }
+
+    /**
+     * Parses the optional arguments for the action 'NEW'
+     * 
+     * @param index - the starting index of optional arguments
+     */
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
