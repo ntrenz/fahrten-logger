@@ -51,7 +51,7 @@ public class UserInputHandler {
                 return new HelpInterpreter(commands_list.subList(1, commands_list.size()));
             }
             case "exit" -> {
-                return new ExitInterpreter(commands_list.subList(1, commands_list.size()), new DataHandler()); //TODO: use exisitng data Handler object
+                return new ExitInterpreter(commands_list.subList(1, commands_list.size()), new DataHandler());
             }
             default -> {
                 return new UnknownInterpreter(commands_list.get(0));
