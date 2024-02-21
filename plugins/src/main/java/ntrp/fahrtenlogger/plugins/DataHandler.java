@@ -7,8 +7,11 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -20,9 +23,11 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import ntrp.fahrtenlogger.adapters.DataSaver;
+import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.RepositoryInterface;
 
 import ntrp.fahrtenlogger.domain.Entities.Trip;
+import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 public class DataHandler implements DataSaver {
     private Path fuel_data_path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
@@ -50,10 +55,10 @@ public class DataHandler implements DataSaver {
                 String[] attributes = line[0].split(";");
                 return new Trip(
                         Integer.parseInt(attributes[0]),
-                        Integer.parseInt(attributes[1]),
-                        attributes[2],
-                        attributes[3],
-                        Float.parseFloat(attributes[4])
+                        new Place(attributes[2]),
+                        new Place(attributes[3]),
+                        new Kilometer(Float.parseFloat(attributes[4])),
+                        LocalDate.parse(attributes[1], DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMAN))
                 );
             }).forEach(trips::add);
         } catch (Exception e) {
