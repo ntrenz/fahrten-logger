@@ -17,15 +17,12 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import ntrp.fahrtenlogger.adapters.DataSaver;
-import ntrp.fahrtenlogger.domain.Refuelling;
 import ntrp.fahrtenlogger.domain.RepositoryInterface;
 
 import ntrp.fahrtenlogger.domain.Entities.Trip;
-import ntrp.fahrtenlogger.domain.Refuelling;
 
 public class DataHandler implements DataSaver {
     private Path fuel_data_path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");

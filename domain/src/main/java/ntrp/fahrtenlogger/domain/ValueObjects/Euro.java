@@ -1,67 +1,52 @@
 package ntrp.fahrtenlogger.domain.ValueObjects;
 
-import java.util.Objects;
+import java.text.NumberFormat;
+import java.util.Locale;
 
-public class Euro {
+/**
+ * The Euro record represents an amount in Euros.
+ */
+public record Euro(double amount) {
+
     /**
-     * Currency Code of Euro {@value}
+     * Constructs a new Euro with the specified amount.
+     * Throws an IllegalArgumentException if the amount is negative.
+     *
+     * @param amount the amount in Euros
      */
-    private static final char CURRENCY_CODE = '€';
-
-    /**
-     * Amount of this ValueObject as {@code double}
-     */
-    private final double amount;
-
-    public Euro(double amount) {
+    public Euro {
         if (amount < 0) {
             throw new IllegalArgumentException("Euro amount cannot be negative.");
         }
-        this.amount = amount;
     }
 
     /**
-     * Gibt die Menge dieses Objekts zurück.
-     * @author robin13091
-     * @return {@code double (#{@amount})}
-     */
-    public double getAmount() {
-        return amount;
-    }
-
-    /**
-     * Addiert ein Euro Objekt auf dieses drauf.
-     * @param euro Second Euro Object
-     * @return Euro
+     * Adds the specified Euro amount to this Euro.
+     *
+     * @param euro the Euro amount to add
+     * @return a new Euro representing the sum of this Euro and the specified Euro
      */
     public Euro addAmount(Euro euro) {
-        return new Euro(this.amount + euro.getAmount());
+        return new Euro(this.amount + euro.amount());
     }
 
     /**
-     * Subtrahiert ein Euro Objekt von diesem.
-     * @param euro
-     * @return Euro
+     * Subtracts the specified Euro amount from this Euro.
+     *
+     * @param euro the Euro amount to subtract
+     * @return a new Euro representing the difference between this Euro and the specified Euro
      */
     public Euro subAmount(Euro euro) {
-        return new Euro(this.amount - euro.getAmount());
+        return new Euro(this.amount - euro.amount());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Euro euro = (Euro) o;
-        return Double.compare(euro.amount, amount) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(amount);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%.2f " + CURRENCY_CODE, amount);
+    /**
+     * Formats this Euro amount as a string in the format used in Germany.
+     *
+     * @return a string representation of this Euro amount in the format used in Germany
+     */
+    public String format() {
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        return format.format(amount);
     }
 }

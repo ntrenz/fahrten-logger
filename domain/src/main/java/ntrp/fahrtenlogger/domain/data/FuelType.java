@@ -1,44 +1,48 @@
 package ntrp.fahrtenlogger.domain.data;
 
 /**
- * Enum representing various types of fuel.
- * <p>
- * This enum includes types such as Diesel, E10, and E5.
+ * The FuelType enum represents the type of fuel.
  */
 public enum FuelType {
+
     /**
-     * Diesel fuel type.
+     * Represents Diesel fuel type.
      */
     DIESEL("Diesel"),
 
     /**
-     * E10 fuel type.
+     * Represents E10 fuel type.
      */
     E10("E10"),
 
     /**
-     * E5 fuel type.
+     * Represents E5 fuel type.
      */
     E5("E5");
 
+    /**
+     * The type of fuel.
+     */
     private final String fuelType;
 
     /**
-     * Constructor for the enum.
+     * Constructs a new FuelType with the specified type.
      *
-     * @param fuelType A string representing the fuel type.
+     * @param fuelType the type of fuel
      */
     FuelType(String fuelType) {
         this.fuelType = fuelType;
     }
 
     /**
-     * Returns the string representation of the enum constant.
+     * Returns the string representation of the fuel type.
      *
-     * @return A string representing the fuel type.
+     * @return the string representation of the fuel type
      */
     @Override
     public String toString() {
-        return "FuelTypes{fuelType="+this.fuelType+"}";
+        return "FuelType{" +
+                "fuelType='" + fuelType + '\'' +
+                '}';
     }
 }

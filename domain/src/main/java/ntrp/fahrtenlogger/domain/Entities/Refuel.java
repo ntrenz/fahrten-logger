@@ -1,32 +1,57 @@
 package ntrp.fahrtenlogger.domain.Entities;
 
+import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
+import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
 
+import java.time.LocalDate;
+
 /**
- * Class representing a refuel event.
- * <p>
- * This class includes information about the id of the refuel event, the amount of liters refueled, the price per liter, the type of fuel used, the gas station where the refuel took place, and the date of the refuel.
+ * The Refuel class represents a refueling event with specific details.
  */
 public class Refuel {
 
-    private final int id;
-    private final float liters;
-    private final float pricePerLiter;
-    private final FuelType fuelType;
-    private final String gasStation;
-    private final int date;
+    /**
+     * The id of the refueling event.
+     */
+    private int id;
 
     /**
-     * Constructor for the Refuel class.
-     *
-     * @param id            The id of the refuel event.
-     * @param liters        The amount of liters refueled.
-     * @param pricePerLiter The price per liter.
-     * @param fuelType      The type of fuel used.
-     * @param gasStation    The gas station where the refuel took place.
-     * @param date          The date of the refuel.
+     * The amount of fuel in liters.
      */
-    public Refuel(int id, float liters, float pricePerLiter, FuelType fuelType, String gasStation, int date) {
+    private Liter liters;
+
+    /**
+     * The price per liter of fuel.
+     */
+    private Euro pricePerLiter;
+
+    /**
+     * The type of fuel used.
+     */
+    private FuelType fuelType;
+
+    /**
+     * The gas station of the refueling event.
+     */
+    private GasStation gasStation;
+
+    /**
+     * The date of the refueling event.
+     */
+    private LocalDate date;
+
+    /**
+     * Constructs a new Refuel with the specified details.
+     *
+     * @param id the id of the refueling event
+     * @param liters the amount of fuel in liters
+     * @param pricePerLiter the price per liter of fuel
+     * @param fuelType the type of fuel used
+     * @param gasStation the gas station of the refueling event
+     * @param date the date of the refueling event
+     */
+    public Refuel(int id, Liter liters, Euro pricePerLiter, FuelType fuelType, GasStation gasStation, LocalDate date) {
         this.id = id;
         this.liters = liters;
         this.pricePerLiter = pricePerLiter;
@@ -36,56 +61,127 @@ public class Refuel {
     }
 
     /**
-     * Returns the id of the refuel event.
+     * Gets the id of this refueling event.
      *
-     * @return The id of the refuel event.
+     * @return the id of this refueling event
      */
     public int getId() {
         return id;
     }
 
     /**
-     * Returns the amount of liters refueled.
+     * Sets the id of this refueling event.
      *
-     * @return The amount of liters refueled.
+     * @param id the new id of this refueling event
      */
-    public float getLiters() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets the amount of fuel in liters.
+     *
+     * @return the amount of fuel in liters
+     */
+    public Liter getLiters() {
         return liters;
     }
 
     /**
-     * Returns the price per liter.
+     * Sets the amount of fuel in liters.
      *
-     * @return The price per liter.
+     * @param liters the new amount of fuel in liters
      */
-    public float getPricePerLiter() {
+    public void setLiters(Liter liters) {
+        this.liters = liters;
+    }
+
+    /**
+     * Gets the price per liter of fuel.
+     *
+     * @return the price per liter of fuel
+     */
+    public Euro getPricePerLiter() {
         return pricePerLiter;
     }
 
     /**
-     * Returns the type of fuel used.
+     * Sets the price per liter of fuel.
      *
-     * @return The type of fuel used.
+     * @param pricePerLiter the new price per liter of fuel
+     */
+    public void setPricePerLiter(Euro pricePerLiter) {
+        this.pricePerLiter = pricePerLiter;
+    }
+
+    /**
+     * Gets the type of fuel used.
+     *
+     * @return the type of fuel used
      */
     public FuelType getFuelType() {
         return fuelType;
     }
 
     /**
-     * Returns the gas station where the refuel took place.
+     * Sets the type of fuel used.
      *
-     * @return The gas station where the refuel took place.
+     * @param fuelType the new type of fuel used
      */
-    public String getGasStation() {
+    public void setFuelType(FuelType fuelType) {
+        this.fuelType = fuelType;
+    }
+
+    /**
+     * Gets the gas station of the refueling event.
+     *
+     * @return the gas station of the refueling event
+     */
+    public GasStation getGasStation() {
         return gasStation;
     }
 
     /**
-     * Returns the date of the refuel.
+     * Sets the gas station of the refueling event.
      *
-     * @return The date of the refuel.
+     * @param gasStation the gas station of the refueling event
      */
-    public int getDate() {
+    public void setGasStation(GasStation gasStation) {
+        this.gasStation = gasStation;
+    }
+
+    /**
+     * Gets the date of the refueling event.
+     *
+     * @return the date of the refueling event
+     */
+    public LocalDate getDate() {
         return date;
+    }
+
+    /**
+     * Sets the date of the refueling event.
+     *
+     * @param date the new date of the refueling event
+     */
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    /**
+     * Returns a string representation of this Refuel.
+     *
+     * @return a string representation of this Refuel
+     */
+    @Override
+    public String toString() {
+        return "Refuel{" +
+                "id=" + id +
+                ", liters=" + liters +
+                ", pricePerLiter=" + pricePerLiter +
+                ", fuelType=" + fuelType +
+                ", gasStation=" + gasStation +
+                ", date=" + date +
+                '}';
     }
 }
