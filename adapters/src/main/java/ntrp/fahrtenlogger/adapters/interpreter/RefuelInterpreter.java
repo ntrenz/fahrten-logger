@@ -23,6 +23,26 @@ public class RefuelInterpreter extends CommandInterpreter {
         super(args);
     }
 
+    public Liter getAmount() {
+        return amount;
+    }
+
+    public Euro getPrice_per_liter() {
+        return price_per_liter;
+    }
+
+    public FuelType getFuel_type() {
+        return fuel_type;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public GasStation getGasStation() {
+        return gasStation;
+    }
+
     @Override
     public void parseCommands() {
         // command structure:
