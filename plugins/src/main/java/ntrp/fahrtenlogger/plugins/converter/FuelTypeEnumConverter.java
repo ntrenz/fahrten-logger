@@ -3,15 +3,15 @@ package ntrp.fahrtenlogger.plugins.converter;
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvConstraintViolationException;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import ntrp.fahrtenlogger.domain.data.FuelTypes;
 import ntrp.fahrtenlogger.plugins.FuelRecordBean;
+import ntrp.fahrtenlogger.domain.data.FuelType;
 
 public class FuelTypeEnumConverter extends AbstractBeanField<FuelRecordBean, String> {
 
     @Override
-    protected Object convert(String value) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
+    protected Object convert(String value) throws CsvDataTypeMismatchException {
         try {
-            return FuelTypes.valueOf(value.trim());
+            return FuelType.valueOf(value.trim());
         } catch (RuntimeException e) {
             throw new CsvDataTypeMismatchException(e.getMessage());
         }

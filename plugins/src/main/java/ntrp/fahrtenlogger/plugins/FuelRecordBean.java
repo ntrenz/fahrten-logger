@@ -4,7 +4,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
-import ntrp.fahrtenlogger.domain.data.FuelTypes;
+import ntrp.fahrtenlogger.domain.data.FuelType;
 import ntrp.fahrtenlogger.plugins.converter.*;
 
 import java.nio.file.Path;
@@ -17,7 +17,7 @@ public class FuelRecordBean extends CsvBean {
     @CsvBindByName
     private int id;
     @CsvCustomBindByName(column = "fuel_type", converter = FuelTypeEnumConverter.class)
-    private FuelTypes fuelType;
+    private FuelType fuelType;
     @CsvCustomBindByName(column = "amount", converter = LiterConverter.class)
     private Liter amount;
     @CsvCustomBindByName(column = "price_per_liter", converter = EuroConverter.class)
@@ -49,11 +49,11 @@ public class FuelRecordBean extends CsvBean {
         this.id = id;
     }
 
-    public FuelTypes getFuelType() {
+    public FuelType getFuelType() {
         return fuelType;
     }
 
-    public void setFuelType(FuelTypes fuel_type) {
+    public void setFuelType(FuelType fuel_type) {
         this.fuelType = fuel_type;
     }
 

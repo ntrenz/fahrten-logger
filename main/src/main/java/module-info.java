@@ -4,4 +4,5 @@ module main {
     requires application;
     requires domain;
     requires com.opencsv;
+    requires java.sql;
 }

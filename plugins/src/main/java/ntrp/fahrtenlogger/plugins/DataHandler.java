@@ -24,16 +24,46 @@ import ntrp.fahrtenlogger.adapters.DataSaver;
 import ntrp.fahrtenlogger.domain.Refuelling;
 import ntrp.fahrtenlogger.domain.RepositoryInterface;
 
+import ntrp.fahrtenlogger.domain.Entities.Trip;
+import ntrp.fahrtenlogger.domain.Refuelling;
+
 public class DataHandler implements DataSaver {
     private Path fuel_data_path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
     private Path car_data_path = Paths.get("plugins/src/main/resources/CAR_DATA.csv");
+    private Path fuelDataPath = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
+    private Path carDataPath = Paths.get("plugins/src/main/resources/CAR_DATA.csv");
 
-    public DataHandler(Path fuel_data_path, Path car_data_path) {
-        this.fuel_data_path = fuel_data_path;
-        this.car_data_path = car_data_path;
+    private static final Path TRIPS_PATH = Paths.get("plugins/src/main/resources/trips.csv");
+
+
+    public DataHandler(Path fuelDataPath, Path carDataPath) {
+        this.fuelDataPath = fuelDataPath;
+        this.carDataPath = carDataPath;
     }
 
-    public DataHandler() { }
+    public DataHandler() {}
+
+    public List<Trip> getAllTrips() {
+        List<Trip> trips = new ArrayList<>();
+        try (
+                Reader reader = Files.newBufferedReader(TRIPS_PATH);
+                CSVReader csvReader = new CSVReader(reader)
+        ) {
+            csvReader.readAll().stream().skip(1).map(line -> {
+                String[] attributes = line[0].split(";");
+                return new Trip(
+                        Integer.parseInt(attributes[0]),
+                        Integer.parseInt(attributes[1]),
+                        attributes[2],
+                        attributes[3],
+                        Float.parseFloat(attributes[4])
+                );
+            }).forEach(trips::add);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return trips;
+    }
 
     /**
      * Generic implementation of a CSV reader accepting every class T implementing the interface {@link CsvBean}.
