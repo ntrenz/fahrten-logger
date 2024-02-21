@@ -19,9 +19,12 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import ntrp.fahrtenlogger.domain.Refuelling;
 
-public class DataHandler {
+import ntrp.fahrtenlogger.adapters.DataSaver;
+import ntrp.fahrtenlogger.domain.Refuelling;
+import ntrp.fahrtenlogger.domain.RepositoryInterface;
+
+public class DataHandler implements DataSaver {
     private Path fuel_data_path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
     private Path car_data_path = Paths.get("plugins/src/main/resources/CAR_DATA.csv");
 
@@ -59,5 +62,17 @@ public class DataHandler {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean saveAllRepositories() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveAllRepositories'");
+    }
+
+    @Override
+    public boolean saveRepository(RepositoryInterface repository) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveRepository'");
     }
 }
