@@ -50,4 +50,11 @@ public record Liter(double volume) {
     public String format() {
         return String.format("%.2f %s", volume, SI_CODE);
     }
+
+    @Override
+    public String toString() {
+        return Double.toString(volume);
+    }
+
+    
 }

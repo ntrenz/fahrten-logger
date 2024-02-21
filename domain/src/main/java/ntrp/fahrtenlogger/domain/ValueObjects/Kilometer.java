@@ -50,4 +50,11 @@ public record Kilometer(double distance) {
     public String format() {
         return String.format("%.2f %s", distance, SI_CODE);
     }
+
+    @Override
+    public String toString() {
+        return Double.toString(distance);
+    }
+
+    
 }
