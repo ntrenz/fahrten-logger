@@ -3,4 +3,6 @@ module main {
     requires adapters;
     requires application;
     requires domain;
+    requires com.opencsv;
+    requires java.sql;
 }
