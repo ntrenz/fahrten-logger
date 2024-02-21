@@ -5,10 +5,14 @@ import com.opencsv.bean.CsvCustomBindByName;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
+import ntrp.fahrtenlogger.plugins.converter.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 public class FuelRecordBean extends CsvBean {
+    static Path path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
 
     @CsvBindByName
     private int id;
@@ -18,7 +22,7 @@ public class FuelRecordBean extends CsvBean {
     private Liter amount;
     @CsvCustomBindByName(column = "price_per_liter", converter = EuroConverter.class)
     private Euro pricePerLiter;
-    @CsvCustomBindByName(column = "date", converter = ntrp.fahrtenlogger.plugins.DateConverter.class)
+    @CsvCustomBindByName(column = "date", converter = DateConverter.class)
     private LocalDate date;
 
     public Euro getPricePerLiter() {

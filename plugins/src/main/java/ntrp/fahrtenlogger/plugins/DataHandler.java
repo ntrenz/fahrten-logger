@@ -19,11 +19,17 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+
+import ntrp.fahrtenlogger.adapters.DataSaver;
+import ntrp.fahrtenlogger.domain.Refuelling;
+import ntrp.fahrtenlogger.domain.RepositoryInterface;
+
 import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.Refuelling;
 
-public class DataHandler {
-
+public class DataHandler implements DataSaver {
+    private Path fuel_data_path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
+    private Path car_data_path = Paths.get("plugins/src/main/resources/CAR_DATA.csv");
     private Path fuelDataPath = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
     private Path carDataPath = Paths.get("plugins/src/main/resources/CAR_DATA.csv");
 
@@ -59,46 +65,44 @@ public class DataHandler {
         return trips;
     }
 
-    public List<Refuelling> readFuelData() {
-        List<Refuelling> refuellings = new ArrayList<>();
-        try (Reader reader = Files.newBufferedReader(this.fuelDataPath)) {
-            try (CSVReader csvReader = new CSVReader(reader)) {
-                for (String[] fuelRecord : csvReader.readAll()) {
-
-                }
-
-                return refuellings;
-            }
-        } catch (IOException | CsvException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<FuelRecordBean> beanBuilder(Class<FuelRecordBean> c) throws Exception {
-        try (Reader reader = Files.newBufferedReader(fuelDataPath)) {
-            CsvToBean<FuelRecordBean> cb = new CsvToBeanBuilder<FuelRecordBean>(reader)
-                    .withType(c)
+    /**
+     * Generic implementation of a CSV reader accepting every class T implementing the interface {@link CsvBean}.
+     * @param beanObject class of data type
+     * @return List of data objects of type T
+     * @param <T>
+     * @throws Exception TODO
+     */
+    public <T extends CsvBean> List<T> beanBuilder(Class<T> beanObject) throws Exception {
+        try (Reader reader = Files.newBufferedReader(T.getPath())) {
+            CsvToBean<T> cb = new CsvToBeanBuilder<T>(reader)
+                    .withType(beanObject)
                     .build();
             return cb.parse().stream().toList();
         }
     }
 
-    public List<TripBean> buildBean(Class<TripBean> c) throws Exception {
-        try (Reader reader = Files.newBufferedReader(TRIPS_PATH)) {
-            CsvToBean<TripBean> tripBean = new CsvToBeanBuilder<TripBean>(reader)
-                    .withType(c)
-                    .build();
-            return tripBean.parse().stream().toList();
-        }
-    }
-
-    public void beanWriter(List<Refuelling> data) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        try (Writer writer = new FileWriter(String.valueOf(fuelDataPath))) {
-            StatefulBeanToCsv<Refuelling> sbc = new StatefulBeanToCsvBuilder<Refuelling>(writer)
+    public <T extends CsvBean> boolean beanWriter(List<T> beanObjects) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+        try (Writer writer = new FileWriter(String.valueOf(T.getPath()))) {
+            StatefulBeanToCsv<CsvBean> sbc = new StatefulBeanToCsvBuilder<CsvBean>(writer)
                     .withQuotechar('\'')
                     .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                     .build();
-            sbc.write(data);
+            sbc.write((CsvBean) beanObjects);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
+    }
+
+    @Override
+    public boolean saveAllRepositories() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveAllRepositories'");
+    }
+
+    @Override
+    public boolean saveRepository(RepositoryInterface repository) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveRepository'");
     }
 }

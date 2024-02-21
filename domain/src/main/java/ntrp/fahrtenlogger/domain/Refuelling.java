@@ -1,6 +1,9 @@
 package ntrp.fahrtenlogger.domain;
 
 import ntrp.fahrtenlogger.domain.data.FuelType;
+import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
+import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
+import ntrp.fahrtenlogger.domain.data.FuelType;
 
 /**
  * Class representing a refuelling event.
@@ -11,7 +14,9 @@ public class Refuelling {
 
     private final int id;
     private final FuelType fuelType;
-    private final double amount;
+    private final Liter amount;
+    private final Euro pricePerLiter;
+    private final Euro totalPrice;
 
     /**
      * Constructor for the Refuelling class.
@@ -20,10 +25,12 @@ public class Refuelling {
      * @param fuelType  The type of fuel used.
      * @param amount    The amount of fuel.
      */
-    public Refuelling(int id, FuelType fuelType, double amount) {
+    public Refuelling(int id, FuelType fuelType, Liter amount, Euro pricePerLiter) {
         this.id = id;
         this.fuelType = fuelType;
         this.amount = amount;
+        this.pricePerLiter = pricePerLiter;
+        this.totalPrice = new Euro(this.pricePerLiter.getAmount() * this.amount.getVolume());
     }
 
     /**
@@ -32,8 +39,8 @@ public class Refuelling {
      * @param fuelType  The type of fuel used.
      * @param amount    The amount of fuel.
      */
-    public Refuelling(FuelType fuelType, double amount) {
-        this(1, fuelType, amount);
+    public Refuelling(FuelType fuelType, Liter amount, Euro pricePerLiter) {
+        this(1, fuelType, amount, pricePerLiter);
     }
 
     /**
@@ -54,12 +61,7 @@ public class Refuelling {
         return fuelType;
     }
 
-    /**
-     * Returns the amount of fuel.
-     *
-     * @return The amount of fuel.
-     */
-    public double getAmount() {
+    public Liter getAmount() {
         return amount;
     }
 
@@ -70,6 +72,6 @@ public class Refuelling {
      */
     @Override
     public String toString() {
-        return "Refuelling{id=" + id + ", fuelType=" + fuelType + ", amount=" + amount + "}";
+        return "Refuelling{id=" + id + ", fuelType=" + fuelType + ", pricePerLiter=" + pricePerLiter + ", totalPrice=" + totalPrice + ", amount=" + amount + "}";
     }
 }

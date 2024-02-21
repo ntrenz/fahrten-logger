@@ -1,8 +1,9 @@
-package ntrp.fahrtenlogger.plugins;
+package ntrp.fahrtenlogger.plugins.converter;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
+import ntrp.fahrtenlogger.plugins.FuelRecordBean;
 
 /**
  * Class for converting a string value to a Euro object.

@@ -1,23 +1,30 @@
 package ntrp.fahrtenlogger.main;
 
-import ntrp.fahrtenlogger.domain.Entities.Trip;
-import ntrp.fahrtenlogger.plugins.DataHandler;
-import ntrp.fahrtenlogger.plugins.TripAnalyzer;
-
-import java.util.List;
+import ntrp.fahrtenlogger.adapters.interpreter.CommandInterpreter;
+import ntrp.fahrtenlogger.adapters.interpreter.ExitInterpreter;
+import ntrp.fahrtenlogger.plugins.io.UserInputHandler;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        DataHandler dataHandler = new DataHandler();
+    public static void main(String[] args) {
+        // - init -
 
-        List<Trip> trips = dataHandler.getAllTrips();
-        for(Trip trip : trips) System.out.println(trip.toString());
-        TripAnalyzer tripAnalyzer = new TripAnalyzer(trips);
-        String totalDistanceFormatted = String.format("%.1f km", tripAnalyzer.getTotalDistance());
-        System.out.println("Trips Gesamt = " + tripAnalyzer.getCount());
-        System.out.println("Gesamtdistanz = " + totalDistanceFormatted);
 
-//        List<TripBean> trips = dataHandler.buildBean(TripBean.class);
-//        trips.iterator().forEachRemaining(c -> System.out.println(c.toString()));
+        // - main loop -
+        mainLoop();
+    }
+
+    private static void mainLoop() {
+        UserInputHandler u = new UserInputHandler();
+        CommandInterpreter interpreter;
+        do {
+            String input = u.receiveUserInput();
+            interpreter = u.handleUserInput(input);
+            try {
+                interpreter.parseCommands();
+                interpreter.executeCommands();
+            } catch (Exception e) {
+                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e);
+            }
+        } while (!(interpreter instanceof ExitInterpreter));
     }
 }
