@@ -33,7 +33,7 @@ class TripInterpreterTest {
     void interpretCommandsCorrectWith3() {
         tripInterpreter.parseCommands();
 
-        assertEquals(tripInterpreter.getDistance().getValue(), 55.3);
+        assertEquals(tripInterpreter.getDistance().distance(), 55.3);
         // assertEquals(tripInterpreter.getFrom_place(), new Place("a"));
         // assertEquals(tripInterpreter.getTo_place(), new Place("b"));
         assertEquals(tripInterpreter.getDate(), LocalDate.of(2023, 11, 22));

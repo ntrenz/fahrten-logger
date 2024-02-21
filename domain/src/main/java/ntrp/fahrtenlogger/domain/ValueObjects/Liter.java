@@ -1,38 +1,53 @@
 package ntrp.fahrtenlogger.domain.ValueObjects;
 
-import java.util.Objects;
+/**
+ * The Liter record represents a volume in liters.
+ */
+public record Liter(double volume) {
 
-public class Liter {
+    /**
+     * The SI unit code for liters.
+     */
+    private static final char SI_CODE = 'l';
 
-    private static final char SI_UNIT = 'l';
-    private final double volume;
-
-    public Liter(double volume) {
+    /**
+     * Constructs a new Liter with the specified volume.
+     * Throws an IllegalArgumentException if the volume is negative.
+     *
+     * @param volume the volume in liters
+     */
+    public Liter {
         if (volume < 0) {
             throw new IllegalArgumentException("Volume in liters cannot be negative.");
         }
-        this.volume = volume;
     }
 
-    public double getVolume() {
-        return volume;
+    /**
+     * Adds the specified Liter volume to this Liter.
+     *
+     * @param liter the Liter volume to add
+     * @return a new Liter representing the sum of this Liter and the specified Liter volume
+     */
+    public Liter addVolume(Liter liter) {
+        return new Liter(this.volume + liter.volume());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Liter liter = (Liter) o;
-        return Double.compare(liter.volume, volume) == 0;
+    /**
+     * Subtracts the specified Liter volume from this Liter.
+     *
+     * @param liter the Liter volume to subtract
+     * @return a new Liter representing the difference between this Liter and the specified Liter volume
+     */
+    public Liter subVolume(Liter liter) {
+        return new Liter(this.volume - liter.volume());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(volume);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%.2f " + SI_UNIT, volume);
+    /**
+     * Formats this Liter volume as a string in the format used in the SI system.
+     *
+     * @return a string representation of this Liter volume in the format used in the SI system
+     */
+    public String format() {
+        return String.format("%.2f %s", volume, SI_CODE);
     }
 }

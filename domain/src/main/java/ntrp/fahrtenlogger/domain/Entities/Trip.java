@@ -1,82 +1,159 @@
 package ntrp.fahrtenlogger.domain.Entities;
 
+import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
+
+import java.time.LocalDate;
+
 /**
- * Class representing a trip.
- * <p>
- * This class includes information about the id of the trip, the date of the trip, the starting location, the destination, and the distance of the trip.
+ * The Trip class represents a trip with specific details.
  */
 public class Trip {
 
-    private final int id;
-    private final int date;
-    private final String from;
-    private final String to;
-    private final float distance;
+    /**
+     * The id of the trip.
+     */
+    private int id;
 
     /**
-     * Constructor for the Trip class.
-     *
-     * @param id       The id of the trip.
-     * @param date     The date of the trip.
-     * @param from     The starting location of the trip.
-     * @param to       The destination of the trip.
-     * @param distance The distance of the trip.
+     * The starting place of the trip.
      */
-    public Trip(int id, int date, String from, String to, float distance) {
+    private Place from;
+
+    /**
+     * The destination of the trip.
+     */
+    private Place to;
+
+    /**
+     * The distance of the trip.
+     */
+    private Kilometer distance;
+
+    /**
+     * The date of the trip.
+     */
+    private LocalDate date;
+
+    /**
+     * Constructs a new Trip with the specified details.
+     *
+     * @param id the id of the trip
+     * @param from the starting place of the trip
+     * @param to the destination of the trip
+     * @param distance the distance of the trip
+     * @param date the date of the trip
+     */
+    public Trip(int id, Place from, Place to, Kilometer distance, LocalDate date) {
         this.id = id;
-        this.date = date;
         this.from = from;
         this.to = to;
         this.distance = distance;
+        this.date = date;
     }
 
     /**
-     * Returns the id of the trip.
+     * Gets the id of this trip.
      *
-     * @return The id of the trip.
+     * @return the id of this trip
      */
     public int getId() {
         return id;
     }
 
     /**
-     * Returns the date of the trip.
+     * Sets the id of this trip.
      *
-     * @return The date of the trip.
+     * @param id the new id of this trip
      */
-    public int getDate() {
-        return date;
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
-     * Returns the starting location of the trip.
+     * Gets the starting place of this trip.
      *
-     * @return The starting location of the trip.
+     * @return the starting place of this trip
      */
-    public String getFrom() {
+    public Place getFrom() {
         return from;
     }
 
     /**
-     * Returns the destination of the trip.
+     * Sets the starting place of this trip.
      *
-     * @return The destination of the trip.
+     * @param from the new starting place of this trip
      */
-    public String getTo() {
+    public void setFrom(Place from) {
+        this.from = from;
+    }
+
+    /**
+     * Gets the destination of this trip.
+     *
+     * @return the destination of this trip
+     */
+    public Place getTo() {
         return to;
     }
 
     /**
-     * Returns the distance of the trip.
+     * Sets the destination of this trip.
      *
-     * @return The distance of the trip.
+     * @param to the new destination of this trip
      */
-    public float getDistance() {
+    public void setTo(Place to) {
+        this.to = to;
+    }
+
+    /**
+     * Gets the distance of this trip.
+     *
+     * @return the distance of this trip
+     */
+    public Kilometer getDistance() {
         return distance;
     }
 
+    /**
+     * Sets the distance of this trip.
+     *
+     * @param distance the new distance of this trip
+     */
+    public void setDistance(Kilometer distance) {
+        this.distance = distance;
+    }
+
+    /**
+     * Gets the date of this trip.
+     *
+     * @return the date of this trip
+     */
+    public LocalDate getDate() {
+        return date;
+    }
+
+    /**
+     * Sets the date of this trip.
+     *
+     * @param date the new date of this trip
+     */
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    /**
+     * Returns a string representation of this Trip.
+     *
+     * @return a string representation of this Trip
+     */
     @Override
     public String toString() {
-        return String.format("Trip %d on %d from %s to %s (%.1f km)", id, date, from, to, distance);
+        return "Trip{" +
+                "id=" + id +
+                ", from=" + from +
+                ", to=" + to +
+                ", distance=" + distance +
+                ", date=" + date +
+                '}';
     }
 }

@@ -1,38 +1,53 @@
 package ntrp.fahrtenlogger.domain.ValueObjects;
 
-import java.util.Objects;
+/**
+ * The Kilometer record represents a distance in kilometers.
+ */
+public record Kilometer(double distance) {
 
-public class Kilometer {
-
+    /**
+     * The SI unit code for kilometers.
+     */
     private static final String SI_CODE = "km";
-    private final double value;
 
-    public Kilometer(double value) {
-        if (value < 0) {
-            throw new IllegalArgumentException("Kilometer value cannot be negative.");
+    /**
+     * Constructs a new Kilometer with the specified distance.
+     * Throws an IllegalArgumentException if the distance is negative.
+     *
+     * @param distance the distance in kilometers
+     */
+    public Kilometer {
+        if (distance < 0) {
+            throw new IllegalArgumentException("Kilometer distance cannot be negative.");
         }
-        this.value = value;
     }
 
-    public double getValue() {
-        return value;
+    /**
+     * Adds the specified Kilometer distance to this Kilometer.
+     *
+     * @param kilometer the Kilometer distance to add
+     * @return a new Kilometer representing the sum of this Kilometer and the specified Kilometer distance
+     */
+    public Kilometer addDistance(Kilometer kilometer) {
+        return new Kilometer(this.distance + kilometer.distance());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Kilometer kilometer = (Kilometer) o;
-        return Double.compare(kilometer.value, value) == 0;
+    /**
+     * Subtracts the specified Kilometer distance from this Kilometer.
+     *
+     * @param kilometer the Kilometer distance to subtract
+     * @return a new Kilometer representing the difference between this Kilometer and the specified Kilometer distance
+     */
+    public Kilometer subDistance(Kilometer kilometer) {
+        return new Kilometer(this.distance - kilometer.distance());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
-    public String toString() {
-        return value + " " + SI_CODE;
+    /**
+     * Formats this Kilometer distance as a string in the format used in the SI system.
+     *
+     * @return a string representation of this Kilometer distance in the format used in the SI system
+     */
+    public String format() {
+        return String.format("%.2f %s", distance, SI_CODE);
     }
 }
