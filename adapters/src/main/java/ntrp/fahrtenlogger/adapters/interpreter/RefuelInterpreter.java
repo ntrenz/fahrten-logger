@@ -98,7 +98,9 @@ public class RefuelInterpreter extends CommandInterpreter {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         else if (arguments_list.get(index).equals("-ft"))
-            this.fuel_type = FuelTypes.valueOf(arguments_list.get(++ index).toUpperCase());
+            this.fuel_type = FuelType.valueOf(arguments_list.get(++ index).toUpperCase());
+        else if (arguments_list.get(index).equals("-gs"))
+            this.gasStation = new GasStation(arguments_list.get(++ index));
     }
 
     @Override
