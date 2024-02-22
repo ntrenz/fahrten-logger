@@ -16,13 +16,13 @@ public class FuelRecordBean extends CsvBean {
 
     @CsvBindByName
     private int id;
-    @CsvCustomBindByName(column = "fuel_type", converter = FuelTypeEnumConverter.class)
+    @CsvCustomBindByName(column = "FUEL_TYPE", converter = FuelTypeEnumConverter.class)
     private FuelType fuelType;
-    @CsvCustomBindByName(column = "amount", converter = LiterConverter.class)
+    @CsvCustomBindByName(column = "AMOUNT", converter = LiterConverter.class)
     private Liter amount;
-    @CsvCustomBindByName(column = "price_per_liter", converter = EuroConverter.class)
+    @CsvCustomBindByName(column = "PRICE_PER_LITER", converter = EuroConverter.class)
     private Euro pricePerLiter;
-    @CsvCustomBindByName(column = "date", converter = DateConverter.class)
+    @CsvCustomBindByName(column = "DATE", converter = DateConverter.class)
     private LocalDate date;
 
     public static Path getPath() {
