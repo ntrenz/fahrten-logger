@@ -49,4 +49,9 @@ public record Euro(double amount) {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
         return format.format(amount);
     }
+
+    @Override
+    public String toString() {
+        return Double.toString(amount);
+    }
 }

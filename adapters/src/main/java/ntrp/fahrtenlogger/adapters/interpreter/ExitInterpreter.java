@@ -2,11 +2,11 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 
 import java.util.List;
 
-import ntrp.fahrtenlogger.adapters.DataSaver;
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
 
 public class ExitInterpreter extends CommandInterpreter {
-    DataSaver dataHandler;
-    public ExitInterpreter(List<String> args, DataSaver dataHandler) {
+    DataHandlerInterface dataHandler;
+    public ExitInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
     }
@@ -16,7 +16,7 @@ public class ExitInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        dataHandler.saveAllRepositories();
+        // dataHandler.saveAllRepositories();
     }
 
     public static String getHelp() {

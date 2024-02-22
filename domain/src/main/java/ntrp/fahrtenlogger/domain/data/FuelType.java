@@ -41,8 +41,6 @@ public enum FuelType {
      */
     @Override
     public String toString() {
-        return "FuelType{" +
-                "fuelType='" + fuelType + '\'' +
-                '}';
+        return fuelType;
     }
 }
