@@ -5,6 +5,8 @@ import ntrp.fahrtenlogger.adapters.interpreter.ExitInterpreter;
 import ntrp.fahrtenlogger.plugins.io.UserInputHandler;
 
 public class Main {
+
+
     public static void main(String[] args) {
         // - init -
 

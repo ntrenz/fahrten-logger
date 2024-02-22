@@ -1,10 +1,12 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
+import ntrp.fahrtenlogger.application.RefuelRepository;
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
+import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
-import ntrp.fahrtenlogger.adapters.interpreter.Actions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,28 +14,30 @@ import java.util.List;
 import java.util.Locale;
 
 public class RefuelInterpreter extends CommandInterpreter {
-    private final int num_of_mandatory_arguments = 3;
-    private final int num_of_mandatory_arguments_del = 2;
-    private Liter amount;
-    private Euro price_per_liter;
-    private FuelType fuel_type = FuelType.E5;
+    private final int NUM_OF_MANDATORY_ARGS = 3;
+    private final int NUM_OF_MANDATORY_ARGS_DEL = 2;
+    private Liter liters;
+    private Euro pricePerLiter;
+    private FuelType fuelType = FuelType.E5;
     private LocalDate date = LocalDate.now();
     private GasStation gasStation;
+    private final DataHandlerInterface dataHandler;
 
-    public RefuelInterpreter(List<String> args) {
+    public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
+        this.dataHandler = dataHandler;
     }
 
-    public Liter getAmount() {
-        return amount;
+    public Liter getLiters() {
+        return liters;
     }
 
-    public Euro getPrice_per_liter() {
-        return price_per_liter;
+    public Euro getPricePerLiter() {
+        return pricePerLiter;
     }
 
-    public FuelType getFuel_type() {
-        return fuel_type;
+    public FuelType getFuelType() {
+        return fuelType;
     }
 
     public LocalDate getDate() {
@@ -64,13 +68,13 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     protected void parseNewCommands() throws IllegalArgumentException {
-        if (arguments_list.size() < num_of_mandatory_arguments)
+        if (arguments_list.size() < NUM_OF_MANDATORY_ARGS)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
         
-        this.amount = new Liter(Double.parseDouble(arguments_list.get(1)));
-        this.price_per_liter = new Euro(Double.parseDouble(arguments_list.get(2)));
+        this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
+        this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
 
-        int index = num_of_mandatory_arguments;
+        int index = NUM_OF_MANDATORY_ARGS;
         while (arguments_list.size() > index) {
             parseOptionalArguments(index);
             index += 2;
@@ -84,7 +88,7 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     protected void parseDeleteCommands() throws IllegalArgumentException {
-        if (arguments_list.size() < num_of_mandatory_arguments_del)
+        if (arguments_list.size() < NUM_OF_MANDATORY_ARGS_DEL)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
         
         this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
@@ -99,14 +103,32 @@ public class RefuelInterpreter extends CommandInterpreter {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         else if (arguments_list.get(index).equals("-ft"))
-            this.fuel_type = FuelType.valueOf(arguments_list.get(++ index).toUpperCase());
+            this.fuelType = FuelType.valueOf(arguments_list.get(++ index).toUpperCase());
         else if (arguments_list.get(index).equals("-gs"))
             this.gasStation = new GasStation(arguments_list.get(++ index));
     }
 
     @Override
     public void executeCommands() {
-        System.out.println(this);
+        RefuelRepository refuelRepository = RefuelRepository.getInstance(dataHandler);
+
+        Refuel refuel = new Refuel(
+                refuelRepository.getNextRefuelId(),
+                liters,
+                pricePerLiter,
+                fuelType,
+                gasStation,
+                date
+        );
+
+        switch (this.action) {
+            case READ -> {
+                List<Refuel> readRefuels = refuelRepository.readRefuels(date, gasStation);
+                readRefuels.forEach(System.out::println);
+            }
+            case NEW -> refuelRepository.writeRefuel(refuel);
+            case DELETE -> refuelRepository.deleteRefuel(refuel);
+        }
     }
 
     public static String getHelp() {
@@ -116,9 +138,9 @@ public class RefuelInterpreter extends CommandInterpreter {
     @Override
     public String toString() {
         return "RefuelInterpreter{" +
-                "amount=" + amount +
-                ", price_per_liter=" + price_per_liter +
-                ", fuel_type=" + fuel_type +
+                "amount=" + liters +
+                ", price_per_liter=" + pricePerLiter +
+                ", fuel_type=" + fuelType +
                 ", date=" + date +
                 ", action=" + action +
                 '}';
