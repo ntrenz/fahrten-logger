@@ -71,25 +71,34 @@ public class DataHandler implements DataSaver {
      * Generic implementation of a CSV reader accepting every class T implementing the interface {@link CsvBean}.
      * @param beanObject class of data type
      * @return List of data objects of type T
-     * @param <T>
-     * @throws Exception TODO
+     * @param <T> Type of CSV Reader
+     * @throws Exception
      */
     public <T extends CsvBean> List<T> beanBuilder(Class<T> beanObject) throws Exception {
-        try (Reader reader = Files.newBufferedReader(T.getPath())) {
-            CsvToBean<T> cb = new CsvToBeanBuilder<T>(reader)
+        try (Reader reader = Files.newBufferedReader((Path) beanObject.getDeclaredMethod("getPath").invoke(null))) {
+            CsvToBean<T> csvToBeanReader = new CsvToBeanBuilder<T>(reader)
                     .withType(beanObject)
                     .build();
-            return cb.parse().stream().toList();
+            return csvToBeanReader.parse().stream().toList();
         }
     }
 
+    /**
+     * Generic implementation of a CSV writer accepting every class T implementing the interface {@link CsvBean}.
+     * @param <T> Type of CSV Reader
+     * @param beanObjects list of bean object classes of data type T
+     * @return Boolean if writing was successfull
+     * @throws IOException
+     * @throws CsvRequiredFieldEmptyException
+     * @throws CsvDataTypeMismatchException
+     */
     public <T extends CsvBean> boolean beanWriter(List<T> beanObjects) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
-        try (Writer writer = new FileWriter(String.valueOf(T.getPath()))) {
-            StatefulBeanToCsv<CsvBean> sbc = new StatefulBeanToCsvBuilder<CsvBean>(writer)
-                    .withQuotechar('\'')
+        try (Writer writer = new FileWriter(String.valueOf((Path) beanObjects.get(0).getClass().getDeclaredMethod("getPath").invoke(null)))) {
+            StatefulBeanToCsv<T> beanToCsvReader = new StatefulBeanToCsvBuilder<T>(writer)
+                    .withQuotechar('\"')
                     .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                     .build();
-            sbc.write((CsvBean) beanObjects);
+            beanToCsvReader.write(beanObjects);
             return true;
         } catch (Exception e) {
             return false;

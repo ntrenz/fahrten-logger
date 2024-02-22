@@ -25,6 +25,10 @@ public class FuelRecordBean extends CsvBean {
     @CsvCustomBindByName(column = "date", converter = DateConverter.class)
     private LocalDate date;
 
+    public static Path getPath() {
+        return path;
+    };
+
     public Euro getPricePerLiter() {
         return pricePerLiter;
     }
