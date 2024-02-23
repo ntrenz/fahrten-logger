@@ -42,15 +42,11 @@ public class TripInterpreter extends CommandInterpreter {
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
         parseAction(arguments_list.get(0));
         switch (this.action) {
-            case NEW -> {
-                parseNewCommands();
-            }
-            case MODIFY -> {
-                parseModifyCommands();
-            }
-            case DELETE -> {
-                parseDeleteCommands();
-            }
+            case NEW -> parseNewCommands();
+            case MODIFY -> parseModifyCommands();
+            case DELETE -> parseDeleteCommands();
+            case READ -> parseReadCommands();
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
         
     }
@@ -82,6 +78,12 @@ public class TripInterpreter extends CommandInterpreter {
         this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         this.from_place = new Place(arguments_list.get(2));
         this.to_place = new Place(arguments_list.get(3));
+    }
+
+    @Override
+    protected void parseReadCommands() throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'parseReadCommands'");
     }
 
     /**

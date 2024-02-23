@@ -45,6 +45,13 @@ public abstract class CommandInterpreter {
     protected abstract void parseDeleteCommands() throws IllegalArgumentException;
 
     /**
+     * Parses arguments for the command 'READ'
+     * 
+     * @throws IllegalArgumentException - Not enough arguments
+     */
+    protected abstract void parseReadCommands() throws IllegalArgumentException;
+
+    /**
      * Handles the input commands an executes the appropriate methods of the application.
      */
     public abstract void executeCommands();
@@ -68,6 +75,7 @@ public abstract class CommandInterpreter {
             case "n", "new" -> this.action = Actions.NEW;
             case "m", "modify" -> this.action = Actions.MODIFY;
             case "d", "delete" -> this.action = Actions.DELETE;
+            case "r", "read" -> this.action = Actions.READ;
             default -> throw new IllegalArgumentException("Action nicht definiert: " + command);
         }
     }

@@ -54,15 +54,11 @@ public class RefuelInterpreter extends CommandInterpreter {
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
         parseAction(arguments_list.get(0));
         switch (this.action) {
-            case NEW -> {
-                parseNewCommands();
-            }
-            case MODIFY -> {
-                parseModifyCommands();
-            }
-            case DELETE -> {
-                parseDeleteCommands();
-            }
+            case NEW -> parseNewCommands();
+            case MODIFY -> parseModifyCommands(); 
+            case DELETE -> parseDeleteCommands();
+            case READ -> parseReadCommands();
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
     }
 
@@ -70,17 +66,17 @@ public class RefuelInterpreter extends CommandInterpreter {
     protected void parseNewCommands() throws IllegalArgumentException {
         if (arguments_list.size() < NUM_OF_MANDATORY_ARGS)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
-        
-        this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
-        this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
+            
+            this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
+            this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
 
-        int index = NUM_OF_MANDATORY_ARGS;
-        while (arguments_list.size() > index) {
-            parseOptionalArguments(index);
-            index += 2;
-        }
+            int index = NUM_OF_MANDATORY_ARGS;
+            while (arguments_list.size() > index) {
+                parseOptionalArguments(index);
+                index += 2;
+            }
     }
-
+    
     @Override
     protected void parseModifyCommands() throws IllegalArgumentException {
         throw new UnsupportedOperationException("Unimplemented method 'parseModifyCommands'");
@@ -89,11 +85,21 @@ public class RefuelInterpreter extends CommandInterpreter {
     @Override
     protected void parseDeleteCommands() throws IllegalArgumentException {
         if (arguments_list.size() < NUM_OF_MANDATORY_ARGS_DEL)
-            throw new IllegalArgumentException("Nicht genügend Parameter!");
+        throw new IllegalArgumentException("Nicht genügend Parameter!");
         
         this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
     }
 
+    @Override
+    protected void parseReadCommands() throws IllegalArgumentException {
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            parseOptionalArguments(index);
+            index += 2;
+        }
+    }
+    
     /**
      * Parses the optional arguments for the action 'NEW'
      * 
@@ -128,6 +134,8 @@ public class RefuelInterpreter extends CommandInterpreter {
             }
             case NEW -> refuelRepository.writeRefuel(refuel);
             case DELETE -> refuelRepository.deleteRefuel(refuel);
+            case MODIFY -> throw new UnsupportedOperationException("Unimplemented case: " + this.action);
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
     }
 
