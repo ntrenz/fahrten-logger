@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.opencsv.CSVWriter;
@@ -17,6 +18,8 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
+import ntrp.fahrtenlogger.domain.Entities.Refuel;
+import ntrp.fahrtenlogger.domain.Entities.Trip;
 
 public class DataHandler implements DataHandlerInterface {
 
@@ -57,6 +60,60 @@ public class DataHandler implements DataHandlerInterface {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    @Override
+    public List<Refuel> readAllRefuels() {
+        List<FuelRecordBean> refuelBeans;
+        List<Refuel> refuels = new ArrayList<>();
+        try {
+            refuelBeans = beanBuilder(ntrp.fahrtenlogger.plugins.FuelRecordBean.class);
+            refuelBeans
+                .iterator()
+                .forEachRemaining(refuelBean -> refuels.add(new Refuel(refuelBean.getId(), refuelBean.getAmount(), refuelBean.getPricePerLiter(), refuelBean.getFuelType(), null, refuelBean.getDate())));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return refuels;
+    }
+
+    @Override
+    public List<Trip> readAllTrips() {
+        List<TripRecordBean> tripBeans;
+        List<Trip> trips = new ArrayList<>();
+        try {
+            tripBeans = beanBuilder(ntrp.fahrtenlogger.plugins.TripRecordBean.class);
+            tripBeans
+                .iterator()
+                .forEachRemaining(tripBean -> trips.add(new Trip(tripBean.getId(), tripBean.getFrom(), tripBean.getTo(), tripBean.getDistance(), tripBean.getDate())));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return trips;
+    }
+
+    @Override
+    public void saveRefuels(List<Refuel> refuels) {
+        List<FuelRecordBean> refuelBeans = new ArrayList<>();
+        refuels.forEach(refuel -> refuelBeans.add(new FuelRecordBean(refuel.getId(), refuel.getFuelType(), refuel.getLiters(), refuel.getPricePerLiter(), refuel.getDate())));
+        
+        try {
+            beanWriter(refuelBeans);
+        } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void saveTrips(List<Trip> trips) {
+        List<TripRecordBean> tripBeans = new ArrayList<>();
+        trips.forEach(trip -> tripBeans.add(new TripRecordBean(trip.getId(), trip.getDate(), trip.getFrom(), trip.getTo(), trip.getDistance())));
+        
+        try {
+            beanWriter(tripBeans);
+        } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException e) {
+            e.printStackTrace();
         }
     }
 }

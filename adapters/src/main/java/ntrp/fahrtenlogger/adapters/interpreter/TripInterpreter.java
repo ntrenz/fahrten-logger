@@ -5,7 +5,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
+import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.Place;
+import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 public class TripInterpreter extends CommandInterpreter {
@@ -15,9 +18,11 @@ public class TripInterpreter extends CommandInterpreter {
     private Place to_place;
     private Kilometer distance = new Kilometer(0);
     private LocalDate date = LocalDate.now();
+    private final DataHandlerInterface dataHandler;
 
-    public TripInterpreter(List<String> args) {
+    public TripInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
+        this.dataHandler = dataHandler;
     }
 
     public Place getFrom_place() {
@@ -42,15 +47,11 @@ public class TripInterpreter extends CommandInterpreter {
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
         parseAction(arguments_list.get(0));
         switch (this.action) {
-            case NEW -> {
-                parseNewCommands();
-            }
-            case MODIFY -> {
-                parseModifyCommands();
-            }
-            case DELETE -> {
-                parseDeleteCommands();
-            }
+            case NEW -> parseNewCommands();
+            case MODIFY -> parseModifyCommands();
+            case DELETE -> parseDeleteCommands();
+            case READ -> parseReadCommands();
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
         
     }
@@ -84,6 +85,20 @@ public class TripInterpreter extends CommandInterpreter {
         this.to_place = new Place(arguments_list.get(3));
     }
 
+    @Override
+    protected void parseReadCommands() throws IllegalArgumentException {
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            if (arguments_list.get(index).equals("-fp"))
+                this.from_place = new Place(arguments_list.get(++ index));
+            else if (arguments_list.get(index).equals("-tp"))
+                this.to_place = new Place(arguments_list.get(++ index));
+            parseOptionalArguments(index);
+            index += 2;
+        }
+    }
+
     /**
      * Parses the optional arguments for the action 'NEW'
      * 
@@ -108,10 +123,29 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        System.out.println(this);
+        TripRepository tripRepository = TripRepository.getInstance(dataHandler);
+
+        Trip trip = new Trip(
+                tripRepository.getNextTripId(),
+                from_place,
+                to_place,
+                distance,
+                date
+        );
+
+        switch (this.action) {
+            case READ -> {
+                List<Trip> readTrips = tripRepository.readTrips(from_place, to_place, date);
+                readTrips.forEach(System.out::println);
+            }
+            case NEW -> tripRepository.writeTrip(trip);
+            case DELETE -> tripRepository.deleteTrip(trip);
+            case MODIFY -> throw new UnsupportedOperationException("Unimplemented case: " + this.action);
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
+        }
     }
 
     public static String getHelp() {
-        return "TRIP: creates, updates or deletes a trip. A trip is a traveled distance between two places.\n---- arguments:\n\tnew <from place> <to place> -di <distance:?> -d <date:?>\n\tmodify\n\tdelete\n----";
+        return "TRIP: creates, updates or deletes a trip. A trip is a traveled distance between two places.\n---- arguments:\n\tnew <from place> <to place> <-di <distance>:?> <-d <date>:?>\n\tdelete\n\tread <-fp <from place>:?> <-tp <to place>:?> <-d <date>:?>\n----";
     }
 }

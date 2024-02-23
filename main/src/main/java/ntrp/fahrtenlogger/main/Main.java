@@ -2,14 +2,15 @@ package ntrp.fahrtenlogger.main;
 
 import ntrp.fahrtenlogger.adapters.interpreter.CommandInterpreter;
 import ntrp.fahrtenlogger.adapters.interpreter.ExitInterpreter;
+import ntrp.fahrtenlogger.plugins.DataHandler;
 import ntrp.fahrtenlogger.plugins.io.UserInputHandler;
 
 public class Main {
-
+    private static DataHandler dataHandler;
 
     public static void main(String[] args) {
         // - init -
-
+        dataHandler = new DataHandler();
 
         // - main loop -
         mainLoop();
@@ -20,7 +21,7 @@ public class Main {
         CommandInterpreter interpreter;
         do {
             String input = u.receiveUserInput();
-            interpreter = u.handleUserInput(input);
+            interpreter = u.handleUserInput(input, dataHandler);
             try {
                 interpreter.parseCommands();
                 interpreter.executeCommands();

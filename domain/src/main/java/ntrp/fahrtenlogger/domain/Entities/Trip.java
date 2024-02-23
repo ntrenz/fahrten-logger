@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.domain.Entities;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * The Trip class represents a trip with specific details.
@@ -148,12 +149,6 @@ public class Trip {
      */
     @Override
     public String toString() {
-        return "Trip{" +
-                "id=" + id +
-                ", from=" + from +
-                ", to=" + to +
-                ", distance=" + distance +
-                ", date=" + date +
-                '}';
+        return "Trip (" + id + "): from " + from + " to " + to + " (" + distance.format() + ") on " + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ".";
     }
 }

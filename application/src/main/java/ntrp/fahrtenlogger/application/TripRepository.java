@@ -64,7 +64,7 @@ public class TripRepository {
      */
     public List<Trip> readTrips(Place from, Place to, LocalDate date) {
         return trips.stream()
-                .filter(t -> (from == null || to == null || (t.getFrom().equals(from) && t.getTo().equals(to)))
+                .filter(t -> (from == null || t.getFrom().equals(from)) && (to == null || t.getTo().equals(to))
                         && (date == null || t.getDate().equals(date))
                 ).collect(Collectors.toList());
     }

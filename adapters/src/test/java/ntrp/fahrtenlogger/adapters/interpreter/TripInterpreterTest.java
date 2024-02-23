@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -12,10 +14,11 @@ import java.util.List;
 
 class TripInterpreterTest {
     TripInterpreter tripInterpreter;
+    DataHandlerInterface dataHandler;
 
     @BeforeEach
     void setUp() {
-        this.tripInterpreter = new TripInterpreter(List.of("new", "a", "b", "-d", "22.11.2023", "-di", "55.3"));
+        this.tripInterpreter = new TripInterpreter(List.of("new", "a", "b", "-d", "22.11.2023", "-di", "55.3"), dataHandler);
     }
 
     @AfterEach
@@ -24,7 +27,7 @@ class TripInterpreterTest {
 
     @Test
     void interpretCommandsTooFewArguments() {
-        TripInterpreter tI = new TripInterpreter(List.of("new", "a"));
+        TripInterpreter tI = new TripInterpreter(List.of("new", "a"), dataHandler);
 
         assertThrows(IllegalArgumentException.class, () -> tI.parseCommands());
     }
@@ -41,7 +44,7 @@ class TripInterpreterTest {
 
     @Test
     void interpretCommandsWithWrongDate() {
-        TripInterpreter tI = new TripInterpreter(List.of("new", "a", "b", "-d", "HALLO"));
+        TripInterpreter tI = new TripInterpreter(List.of("new", "a", "b", "-d", "HALLO"), dataHandler);
 
         assertThrows(DateTimeParseException.class, tI::parseCommands);
     }

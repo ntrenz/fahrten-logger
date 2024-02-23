@@ -37,4 +37,10 @@ public class ExitInterpreter extends CommandInterpreter {
     protected void parseDeleteCommands() throws IllegalArgumentException {
         throw new UnsupportedOperationException("Unimplemented method 'parseDeleteCommands'");
     }
+
+    @Override
+    protected void parseReadCommands() throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'parseReadCommands'");
+    }
 }

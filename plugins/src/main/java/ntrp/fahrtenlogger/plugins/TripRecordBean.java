@@ -28,6 +28,16 @@ public class TripRecordBean extends CsvBean {
     @CsvCustomBindByName(column = "DISTANCE", converter = KilometerConverter.class)
     private Kilometer distance;
 
+    public TripRecordBean() {}
+
+    public TripRecordBean(int id, LocalDate date, Place from, Place to, Kilometer distance) {
+        this.id = id;
+        this.date = date;
+        this.from = from;
+        this.to = to;
+        this.distance = distance;
+    }
+
     public static Path getPath() {
         return path;
     };
