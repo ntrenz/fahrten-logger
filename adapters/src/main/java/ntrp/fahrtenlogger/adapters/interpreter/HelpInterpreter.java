@@ -46,7 +46,7 @@ public class HelpInterpreter extends CommandInterpreter {
     }
 
     public static String getHelp() {
-        return "Das ist der Hilfe-Befehl. Schreibe 'help <command>', um mehr Informationen zu einem bestimmten Befehl zu erhalten. Vorhandene Befehle: \ntrip\nrefuel\nexit\nhelp";
+        return "Das ist der Hilfe-Befehl. Schreibe 'help <command>', um mehr Informationen zu einem bestimmten Befehl zu erhalten. Vorhandene Befehle: \ntrip\nrefuel\nexit\nhelp\nDatumsformat: DD.MM.YYYY\nZahlenformat: x.x";
     }
 
     @Override
