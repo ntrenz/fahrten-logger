@@ -140,7 +140,7 @@ public class RefuelInterpreter extends CommandInterpreter {
     }
 
     public static String getHelp() {
-        return "REFUEL: creates, updates or deletes a refuel. A refuel is a specific action taken when refueling a car on a specific date.\n---- arguments:\n\t<new> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>\n\t<modify>\n\t<delete>\n----";
+        return "REFUEL: creates, updates or deletes a refuel. A refuel is a specific action taken when refueling a car on a specific date.\n---- arguments:\n\tnew <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>\n\tdelete\n\tread <-d <date>:?> <-gs <gas station>:?>\n----";
     }
 
     @Override
