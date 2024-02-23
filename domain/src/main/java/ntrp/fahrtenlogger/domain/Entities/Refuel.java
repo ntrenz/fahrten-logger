@@ -5,6 +5,7 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * The Refuel class represents a refueling event with specific details.
@@ -175,13 +176,6 @@ public class Refuel {
      */
     @Override
     public String toString() {
-        return "Refuel{" +
-                "id=" + id +
-                ", liters=" + liters +
-                ", pricePerLiter=" + pricePerLiter +
-                ", fuelType=" + fuelType +
-                ", gasStation=" + gasStation +
-                ", date=" + date +
-                '}';
+        return "Refuel (" + id +"): " + liters.format() + ", " + pricePerLiter.format() + " (" + fuelType + ") on " + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 }
