@@ -25,6 +25,16 @@ public class FuelRecordBean extends CsvBean {
     @CsvCustomBindByName(column = "DATE", converter = DateConverter.class)
     private LocalDate date;
 
+    public FuelRecordBean() {}
+
+    public FuelRecordBean(int id, FuelType fuelType, Liter amount, Euro pricePerLiter, LocalDate date) {
+        this.id = id;
+        this.fuelType = fuelType;
+        this.amount = amount;
+        this.pricePerLiter = pricePerLiter;
+        this.date = date;
+    }
+
     public static Path getPath() {
         return path;
     };
