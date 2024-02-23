@@ -87,8 +87,16 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     protected void parseReadCommands() throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'parseReadCommands'");
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            if (arguments_list.get(index).equals("-fp"))
+                this.from_place = new Place(arguments_list.get(++ index));
+            else if (arguments_list.get(index).equals("-tp"))
+                this.to_place = new Place(arguments_list.get(++ index));
+            parseOptionalArguments(index);
+            index += 2;
+        }
     }
 
     /**
