@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Locale;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
+import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.Place;
+import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 public class TripInterpreter extends CommandInterpreter {
@@ -113,7 +115,26 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        System.out.println(this);
+        TripRepository tripRepository = TripRepository.getInstance(dataHandler);
+
+        Trip trip = new Trip(
+                tripRepository.getNextTripId(),
+                from_place,
+                to_place,
+                distance,
+                date
+        );
+
+        switch (this.action) {
+            case READ -> {
+                List<Trip> readTrips = tripRepository.readTrips(from_place, to_place, date);
+                readTrips.forEach(System.out::println);
+            }
+            case NEW -> tripRepository.writeTrip(trip);
+            case DELETE -> tripRepository.deleteTrip(trip);
+            case MODIFY -> throw new UnsupportedOperationException("Unimplemented case: " + this.action);
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
+        }
     }
 
     public static String getHelp() {
