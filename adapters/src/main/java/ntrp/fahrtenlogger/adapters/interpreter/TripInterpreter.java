@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
@@ -15,9 +16,11 @@ public class TripInterpreter extends CommandInterpreter {
     private Place to_place;
     private Kilometer distance = new Kilometer(0);
     private LocalDate date = LocalDate.now();
+    private final DataHandlerInterface dataHandler;
 
-    public TripInterpreter(List<String> args) {
+    public TripInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
+        this.dataHandler = dataHandler;
     }
 
     public Place getFrom_place() {

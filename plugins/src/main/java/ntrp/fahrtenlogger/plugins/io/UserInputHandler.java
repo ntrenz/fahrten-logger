@@ -30,7 +30,7 @@ public class UserInputHandler {
      * @param commands String of commands received by user input
      * @return {@link CommandInterpreter} Implementation of an Interpreter
      */
-    public CommandInterpreter handleUserInput(String commands) {
+    public CommandInterpreter handleUserInput(String commands, DataHandler dataHandler) {
         List<String> commands_list = Arrays.stream(commands.split("[\\s*]"))
                 .filter(s -> !Objects.equals(s, ""))
                 .map(String::trim)
@@ -42,16 +42,16 @@ public class UserInputHandler {
         }
         switch (commands_list.get(0)) {
             case "trip" -> {
-                return new TripInterpreter(commands_list.subList(1, commands_list.size()));
+                return new TripInterpreter(commands_list.subList(1, commands_list.size()), dataHandler);
             }
             case "refuel" -> {
-                return new RefuelInterpreter(commands_list.subList(1, commands_list.size()));
+                return new RefuelInterpreter(commands_list.subList(1, commands_list.size()), dataHandler);
             }
             case "help" -> {
                 return new HelpInterpreter(commands_list.subList(1, commands_list.size()));
             }
             case "exit" -> {
-                return new ExitInterpreter(commands_list.subList(1, commands_list.size()), new DataHandler());
+                return new ExitInterpreter(commands_list.subList(1, commands_list.size()), dataHandler);
             }
             default -> {
                 return new UnknownInterpreter(commands_list.get(0));
