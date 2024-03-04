@@ -52,7 +52,12 @@ public class RefuelRepository {
      * @return The ID for the next refuel.
      */
     public int getNextRefuelId() {
-        return refuels.get(refuels.size()-1).getId() + 1;
+        int next_id = 1;
+        for (Refuel refuel : refuels) {
+            if (refuel.getId() >= next_id)
+                next_id = refuel.getId() + 1;
+        }
+        return next_id;
     }
 
     /**
@@ -83,12 +88,11 @@ public class RefuelRepository {
      * @param refuel The refuel to be deleted.
      */
     public void deleteRefuel(Refuel refuel) {
-        // TODO: Currently deletes all refuels on the date of the input refuel. In the future we might want to print
-        //  a list of all refuels on that date to the user with their IDs and have the user reenter the delete prompt
-        //  with the ID to only delete one specific refuel.
-        refuels.forEach(r -> {
-            if (r.getDate().equals(refuel.getDate())) refuels.remove(r);
-        });
+        if (refuel.getId() == this.getNextRefuelId()) {
+            refuels.removeIf(r -> (r.getDate().equals(refuel.getDate()) || refuel.getDate() == null));
+        } else {
+            refuels.removeIf(r -> r.getId() == refuel.getId());
+        }
         saveRefuels();
     }
 
