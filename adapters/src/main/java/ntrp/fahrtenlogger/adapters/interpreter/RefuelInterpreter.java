@@ -15,17 +15,20 @@ import java.util.Locale;
 
 public class RefuelInterpreter extends CommandInterpreter {
     private final int NUM_OF_MANDATORY_ARGS = 3;
-    private final int NUM_OF_MANDATORY_ARGS_DEL = 2;
+    private int id;
     private Liter liters;
     private Euro pricePerLiter;
     private FuelType fuelType = FuelType.E5;
     private LocalDate date = LocalDate.now();
     private GasStation gasStation;
     private final DataHandlerInterface dataHandler;
+    private RefuelRepository refuelRepository;
 
     public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
+        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
+        this.id = refuelRepository.getNextRefuelId();
     }
 
     public Liter getLiters() {
@@ -52,6 +55,8 @@ public class RefuelInterpreter extends CommandInterpreter {
     public void parseCommands() {
         // command structure:
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
+        if (arguments_list.isEmpty())
+            throw new IllegalArgumentException("Not enough Parameters!");
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
@@ -84,10 +89,15 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     protected void parseDeleteCommands() throws IllegalArgumentException {
-        if (arguments_list.size() < NUM_OF_MANDATORY_ARGS_DEL)
-        throw new IllegalArgumentException("Nicht genügend Parameter!");
-        
-        this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            if (arguments_list.get(index).equals("-d"))
+                this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+            else if (arguments_list.get(index).equals("-id"))
+                this.id = Integer.parseInt(arguments_list.get(++ index));
+            index += 2;
+        }
     }
 
     @Override
@@ -116,10 +126,8 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        RefuelRepository refuelRepository = RefuelRepository.getInstance(dataHandler);
-
         Refuel refuel = new Refuel(
-                refuelRepository.getNextRefuelId(),
+                this.id,
                 liters,
                 pricePerLiter,
                 fuelType,

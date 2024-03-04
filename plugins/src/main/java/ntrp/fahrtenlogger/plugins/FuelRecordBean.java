@@ -12,7 +12,8 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 
 public class FuelRecordBean extends CsvBean {
-    static Path path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
+    private final Path path = Paths.get("plugins/src/main/resources/FUEL_DATA.csv");
+    private final String headerLine = "\"AMOUNT\",\"DATE\",\"FUEL_TYPE\",\"ID\",\"PRICE_PER_LITER\"";
 
     @CsvBindByName
     private int id;
@@ -35,9 +36,13 @@ public class FuelRecordBean extends CsvBean {
         this.date = date;
     }
 
-    public static Path getPath() {
+    public Path getPath() {
         return path;
     };
+    
+    public String getHeaderLine() {
+        return headerLine;
+    }
 
     public Euro getPricePerLiter() {
         return pricePerLiter;

@@ -1,5 +1,5 @@
 module adapters {
-    requires application;
+    requires transitive application;
     // exports ntrp.fahrtenlogger.adapters;
     requires transitive domain;
     // exports ntrp.fahrtenlogger.adapters;

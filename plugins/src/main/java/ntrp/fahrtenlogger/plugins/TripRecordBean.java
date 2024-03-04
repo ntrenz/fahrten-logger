@@ -15,7 +15,8 @@ import ntrp.fahrtenlogger.plugins.converter.PlaceConverter;
 import java.nio.file.Path;
 
 public class TripRecordBean extends CsvBean {
-    static Path path = Paths.get("plugins/src/main/resources/TRIP_DATA.csv");
+    private final Path path = Paths.get("plugins/src/main/resources/TRIP_DATA.csv");
+    private final String headerLine = "\"DATE\",\"DISTANCE\",\"FROM_PLACE\",\"ID\",\"TO_PLACE\"";
 
     @CsvBindByName
     private int id;
@@ -38,9 +39,13 @@ public class TripRecordBean extends CsvBean {
         this.distance = distance;
     }
 
-    public static Path getPath() {
+    public Path getPath() {
         return path;
     };
+
+    public String getHeaderLine() {
+        return headerLine;
+    }
 
     public int getId() {
         return id;

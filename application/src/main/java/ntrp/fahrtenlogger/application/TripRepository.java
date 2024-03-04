@@ -52,7 +52,12 @@ public class TripRepository {
      * @return The ID for the next trip.
      */
     public int getNextTripId() {
-        return trips.get(trips.size()-1).getId() + 1;
+        int next_id = 1;
+        for (Trip trip : trips) {
+            if (trip.getId() >= next_id)
+                next_id = trip.getId() + 1;
+        }
+        return next_id;
     }
 
     /**
@@ -83,13 +88,11 @@ public class TripRepository {
      * @param trip The trip to be deleted.
      */
     public void deleteTrip(Trip trip) {
-        // TODO: Currently deletes all trips on the date of the input trip. In the future we might want to print
-        //  a list of all trips on that date to the user with their IDs and have the user reenter the delete prompt
-        //  with the ID to only delete one specific trip.
-        trips.forEach(t -> {
-            if (t.getDate().equals(trip.getDate()))
-                trips.remove(t);
-        });
+        if (trip.getId() == this.getNextTripId()) {
+            trips.removeIf(t -> (t.getDate().equals(trip.getDate()) || trip.getDate() == null) && (t.getFrom().equals(trip.getFrom()) || trip.getFrom() == null) && (t.getTo().equals(trip.getTo()) || trip.getTo() == null));
+        } else {
+            trips.removeIf(t -> t.getId() == trip.getId());
+        }
         saveTrips();
     }
 

@@ -13,16 +13,19 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 public class TripInterpreter extends CommandInterpreter {
     private final int num_of_mandatory_arguments = 3;
-    private final int num_of_mandatory_arguments_del = 4;
     private Place from_place;
     private Place to_place;
     private Kilometer distance = new Kilometer(0);
     private LocalDate date = LocalDate.now();
     private final DataHandlerInterface dataHandler;
+    private TripRepository tripRepository;
+    private int id;
 
     public TripInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
+        this.tripRepository = TripRepository.getInstance(dataHandler);
+        this.id = tripRepository.getNextTripId();
     }
 
     public Place getFrom_place() {
@@ -45,6 +48,8 @@ public class TripInterpreter extends CommandInterpreter {
     public void parseCommands() {
         // command-structure:
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
+        if (arguments_list.isEmpty())
+            throw new IllegalArgumentException("Not enough Parameters!");
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
@@ -78,11 +83,19 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     protected void parseDeleteCommands() throws IllegalArgumentException {
-        if (arguments_list.size() < num_of_mandatory_arguments_del)
-            throw new IllegalArgumentException("Nicht genügend Parameter!");
-        this.date = LocalDate.parse(arguments_list.get(1), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        this.from_place = new Place(arguments_list.get(2));
-        this.to_place = new Place(arguments_list.get(3));
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            if (arguments_list.get(index).equals("-d"))
+                this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+            else if (arguments_list.get(index).equals("-fp"))
+                this.from_place = new Place(arguments_list.get(++ index));
+            else if (arguments_list.get(index).equals("-tp"))
+                this.to_place = new Place(arguments_list.get(++ index));
+            else if (arguments_list.get(index).equals("-id"))
+                this.id = Integer.parseInt(arguments_list.get(++ index));
+            index += 2;
+        }
     }
 
     @Override
@@ -123,14 +136,12 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        TripRepository tripRepository = TripRepository.getInstance(dataHandler);
-
         Trip trip = new Trip(
-                tripRepository.getNextTripId(),
-                from_place,
-                to_place,
-                distance,
-                date
+            this.id,
+            from_place,
+            to_place,
+            distance,
+            date
         );
 
         switch (this.action) {
