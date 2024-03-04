@@ -26,7 +26,7 @@ public class Main {
                 interpreter.parseCommands();
                 interpreter.executeCommands();
             } catch (Exception e) {
-                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e);
+                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e.getMessage());
             }
         } while (!(interpreter instanceof ExitInterpreter));
     }
