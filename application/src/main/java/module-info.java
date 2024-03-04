@@ -1,4 +1,4 @@
 module application {
-    requires domain;
+    requires transitive domain;
     exports ntrp.fahrtenlogger.application;
 }
