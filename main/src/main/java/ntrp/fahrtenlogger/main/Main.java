@@ -16,6 +16,7 @@ public class Main {
         mainLoop();
     }
 
+    @SuppressWarnings("static-access")
     private static void mainLoop() {
         UserInputHandler u = new UserInputHandler();
         CommandInterpreter interpreter;
@@ -26,7 +27,7 @@ public class Main {
                 interpreter.parseCommands();
                 interpreter.executeCommands();
             } catch (Exception e) {
-                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e.getMessage());
+                System.err.println("Im oben ausgeführten Befehl ist ein Fehler aufgetreten: " + e.getMessage() + "\n" + interpreter.getHelp());
             }
         } while (!(interpreter instanceof ExitInterpreter));
     }
