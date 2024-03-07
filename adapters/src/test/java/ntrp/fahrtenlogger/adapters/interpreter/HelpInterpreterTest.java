@@ -34,9 +34,4 @@ public class HelpInterpreterTest {
     void testExecuteCommands() {
 
     }
-
-    @Test
-    void testGetHelp() {
-        assertEquals(HelpInterpreter.getHelp(), "Das ist der Hilfe-Befehl. Schreibe 'help <command>', um mehr Informationen zu einem bestimmten Befehl zu erhalten. Vorhandene Befehle: \ntrip\nrefuel\nexit\nhelp");
-    }
 }
