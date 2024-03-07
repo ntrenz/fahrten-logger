@@ -110,7 +110,17 @@ class TripInterpreterTest {
     
     @Test
     void parseCommandModify() {
+        Actions action = Actions.MODIFY;
 
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+
+        tripInterpreter = new TripInterpreter(commandsList, null);
+
+        Throwable exception = assertThrows(UnsupportedOperationException.class, () -> {
+            tripInterpreter.parseCommands();
+        });
+        assertEquals("Unimplemented method 'parseModifyCommands'", exception.getMessage());
     }
 
     @Test
