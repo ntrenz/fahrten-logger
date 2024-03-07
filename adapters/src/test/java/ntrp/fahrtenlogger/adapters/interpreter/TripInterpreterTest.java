@@ -14,10 +14,9 @@ import org.junit.jupiter.api.Test;
 import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
-
 class TripInterpreterTest {
     // Test Cases:
-    // 
+    //
     // - Not enough Arguments
     // - NEW
     // - MODIFY
@@ -48,12 +47,12 @@ class TripInterpreterTest {
         Actions action = Actions.NEW;
         Place fromPlace = new Place("FROM_PLACE");
         Place toPlace = new Place("TO_PLACE");
-        
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
         commandsList.add(fromPlace.toString());
         commandsList.add(toPlace.toString());
-        
+
         tripInterpreter = new TripInterpreter(commandsList, null);
 
         tripInterpreter.parseCommands();
@@ -71,7 +70,7 @@ class TripInterpreterTest {
         String dateString = "01.03.2024";
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         Kilometer distance = new Kilometer(5);
-        
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
         commandsList.add(fromPlace.toString());
@@ -80,7 +79,7 @@ class TripInterpreterTest {
         commandsList.add(dateString);
         commandsList.add("-di");
         commandsList.add(distance.toString());
-        
+
         tripInterpreter = new TripInterpreter(commandsList, null);
 
         tripInterpreter.parseCommands();
@@ -95,19 +94,19 @@ class TripInterpreterTest {
     @Test
     void parseCommandNewToFewArgs() {
         Actions action = Actions.NEW;
-        
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
-        
+
         tripInterpreter = new TripInterpreter(commandsList, null);
-        
+
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
         });
 
         assertEquals("Nicht genügend Parameter!", exception.getMessage());
     }
-    
+
     @Test
     void parseCommandModify() {
         Actions action = Actions.MODIFY;
@@ -138,7 +137,7 @@ class TripInterpreterTest {
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
     }
-    
+
     @Test
     void parseCommandDeleteWithArgs() {
         Actions action = Actions.DELETE;
@@ -205,7 +204,7 @@ class TripInterpreterTest {
         });
         assertEquals("Date could not be parsed! (Date format must be: DD.MM.YYYY)", exception.getMessage());
     }
-    
+
     @Test
     void parseCommandRead() {
         Actions action = Actions.READ;
@@ -290,6 +289,16 @@ class TripInterpreterTest {
 
     @Test
     void parseCommandUnknownAction() {
+        String action = "UNKNOWN";
 
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action);
+
+        tripInterpreter = new TripInterpreter(commandsList, null);
+
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            tripInterpreter.parseCommands();
+        });
+        assertEquals("Action nicht definiert: " + action, exception.getMessage());
     }
 }
