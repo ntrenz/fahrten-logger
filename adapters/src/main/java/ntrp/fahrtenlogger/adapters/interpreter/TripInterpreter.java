@@ -24,8 +24,6 @@ public class TripInterpreter extends CommandInterpreter {
     public TripInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
-        this.tripRepository = TripRepository.getInstance(dataHandler);
-        this.id = tripRepository.getNextTripId();
     }
 
     public Place getFrom_place() {
@@ -88,7 +86,7 @@ public class TripInterpreter extends CommandInterpreter {
         while (arguments_list.size() > index) {
             if (arguments_list.get(index).equals("-d")) {
                 try {
-                this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+                    this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Date could not be parsed! (Date format must be: DD.MM.YYYY)");
                 }
@@ -99,7 +97,7 @@ public class TripInterpreter extends CommandInterpreter {
                 this.to_place = new Place(arguments_list.get(++ index));
             else if (arguments_list.get(index).equals("-id")) {
                 try {
-                this.id = Integer.parseInt(arguments_list.get(++ index));
+                    this.id = Integer.parseInt(arguments_list.get(++ index));       
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("ID must be an integer!");
                 }
@@ -130,14 +128,14 @@ public class TripInterpreter extends CommandInterpreter {
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d")) {
             try {
-            this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+                this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
             } catch (Exception e) {
                 throw new IllegalArgumentException("Date could not be parsed! (Date format must be: DD.MM.YYYY)");
             }
         }
         else if (arguments_list.get(index).equals("-di")) {
             try {
-            this.distance = new Kilometer(Double.parseDouble(arguments_list.get(++ index)));
+                this.distance = new Kilometer(Double.parseDouble(arguments_list.get(++ index)));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Distance must be a number! (Number format for Distances is: X.X)");
             }
@@ -156,6 +154,9 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
+        this.tripRepository = TripRepository.getInstance(dataHandler);
+        this.id = tripRepository.getNextTripId();
+
         Trip trip = new Trip(
             this.id,
             from_place,
