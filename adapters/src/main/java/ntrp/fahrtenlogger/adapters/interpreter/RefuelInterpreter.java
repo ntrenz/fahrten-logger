@@ -118,9 +118,13 @@ public class RefuelInterpreter extends CommandInterpreter {
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        else if (arguments_list.get(index).equals("-ft"))
+        else if (arguments_list.get(index).equals("-ft")) {
+            try {
             this.fuelType = FuelType.valueOf(arguments_list.get(++ index).toUpperCase());
-        else if (arguments_list.get(index).equals("-gs"))
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Fuel Type is not defined!");
+            }
+        } else if (arguments_list.get(index).equals("-gs"))
             this.gasStation = new GasStation(arguments_list.get(++ index));
     }
 
