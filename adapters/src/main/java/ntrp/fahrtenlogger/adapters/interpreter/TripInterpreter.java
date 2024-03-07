@@ -42,6 +42,10 @@ public class TripInterpreter extends CommandInterpreter {
         return date;
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public void parseCommands() {
         // command-structure:
