@@ -64,7 +64,7 @@ class TripInterpreterTest {
     }
 
     @Test
-    void parseCommandNewWithOptionalArguments() {
+    void parseCommandNewWithOptionalArgs() {
         Actions action = Actions.NEW;
         Place fromPlace = new Place("FROM_PLACE");
         Place toPlace = new Place("TO_PLACE");
@@ -106,11 +106,6 @@ class TripInterpreterTest {
         });
 
         assertEquals("Nicht genügend Parameter!", exception.getMessage());
-    }
-
-    @Test
-    void parseCommandNewWithOptionalArgs() {
-
     }
     
     @Test
