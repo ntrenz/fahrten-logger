@@ -27,8 +27,6 @@ public class RefuelInterpreter extends CommandInterpreter {
     public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
-        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
-        this.id = refuelRepository.getNextRefuelId();
     }
 
     public Liter getLiters() {
@@ -49,6 +47,10 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     public GasStation getGasStation() {
         return gasStation;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -96,7 +98,7 @@ public class RefuelInterpreter extends CommandInterpreter {
                 this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
             else if (arguments_list.get(index).equals("-id"))
                 this.id = Integer.parseInt(arguments_list.get(++ index));
-            index += 2;
+            index ++;
         }
     }
 
@@ -118,14 +120,21 @@ public class RefuelInterpreter extends CommandInterpreter {
     private void parseOptionalArguments(int index) {
         if (arguments_list.get(index).equals("-d"))
             this.date = LocalDate.parse(arguments_list.get(++ index), DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        else if (arguments_list.get(index).equals("-ft"))
-            this.fuelType = FuelType.valueOf(arguments_list.get(++ index).toUpperCase());
-        else if (arguments_list.get(index).equals("-gs"))
+        else if (arguments_list.get(index).equals("-ft")) {
+            try {
+                this.fuelType = FuelType.valueOf(arguments_list.get(++ index).toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Fuel Type is not defined!");
+            }
+        } else if (arguments_list.get(index).equals("-gs"))
             this.gasStation = new GasStation(arguments_list.get(++ index));
     }
 
     @Override
     public void executeCommands() {
+        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
+        this.id = refuelRepository.getNextRefuelId();
+        
         Refuel refuel = new Refuel(
                 this.id,
                 liters,
