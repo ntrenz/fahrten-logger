@@ -125,12 +125,85 @@ class TripInterpreterTest {
 
     @Test
     void parseCommandDelete() {
+        Actions action = Actions.DELETE;
 
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+
+        tripInterpreter = new TripInterpreter(commandsList, null);
+
+        tripInterpreter.parseCommands();
+
+        assertEquals(action, tripInterpreter.action);
+        assertNull(tripInterpreter.getDate());
+        assertEquals(0, tripInterpreter.getId());
     }
     
     @Test
     void parseCommandDeleteWithArgs() {
+        Actions action = Actions.DELETE;
+        Place fromPlace = new Place("FROM_PLACE");
+        Place toPlace = new Place("TO_PLACE");
+        String dateString = "01.03.2024";
+        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        int id = 1;
 
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+        commandsList.add("-fp");
+        commandsList.add(fromPlace.toString());
+        commandsList.add("-tp");
+        commandsList.add(toPlace.toString());
+        commandsList.add("-d");
+        commandsList.add(dateString);
+        commandsList.add("-id");
+        commandsList.add(String.valueOf(id));
+
+        tripInterpreter = new TripInterpreter(commandsList, null);
+
+        tripInterpreter.parseCommands();
+
+        assertEquals(action, tripInterpreter.action);
+        assertEquals(fromPlace, tripInterpreter.getFromPlace());
+        assertEquals(toPlace, tripInterpreter.getToPlace());
+        assertEquals(date, tripInterpreter.getDate());
+        assertEquals(id, tripInterpreter.getId());
+    }
+
+    @Test
+    void parseCommandDeleteWithInvalidId() {
+        Actions action = Actions.DELETE;
+        String id = "ID";
+
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+        commandsList.add("-id");
+        commandsList.add(id);
+
+        tripInterpreter = new TripInterpreter(commandsList, null);
+
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            tripInterpreter.parseCommands();
+        });
+        assertEquals("ID must be an integer!", exception.getMessage());
+    }
+
+    @Test
+    void parseCommandDeleteWithInvalidDate() {
+        Actions action = Actions.DELETE;
+        String dateString = "01-03-2024";
+
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+        commandsList.add("-d");
+        commandsList.add(dateString);
+
+        tripInterpreter = new TripInterpreter(commandsList, null);
+
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            tripInterpreter.parseCommands();
+        });
+        assertEquals("Date could not be parsed! (Date format must be: DD.MM.YYYY)", exception.getMessage());
     }
     
     @Test
