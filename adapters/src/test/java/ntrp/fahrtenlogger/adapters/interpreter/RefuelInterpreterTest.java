@@ -14,6 +14,8 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 class RefuelInterpreterTest {
     // Test Cases:
-    // 
+    //
     // - Not enough arguments
     // - NEW
     // - MODIFY
@@ -41,6 +43,8 @@ class RefuelInterpreterTest {
     RefuelRepository refuelRepository;
     @Mock
     List<Refuel> mockList;
+    @Mock(name="action")
+    Actions action;
 
     @InjectMocks
     RefuelInterpreter refuelInterpreter;
@@ -82,7 +86,7 @@ class RefuelInterpreterTest {
         commandsList.add(action.toString().toLowerCase());
         commandsList.add(liter.toString());
         commandsList.add(pricePerLiter.toString());
-        
+
         this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
@@ -103,7 +107,7 @@ class RefuelInterpreterTest {
         });
         assertEquals("Nicht genügend Parameter!", exception.getMessage());
     }
-    
+
     @Test
     void parseCommandModify() {
         List<String> commandsList = new ArrayList<>();
@@ -149,7 +153,7 @@ class RefuelInterpreterTest {
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(id, refuelInterpreter.getId());
     }
-    
+
     @Test
     void parseCommandRead() {
         List<String> commandsList = new ArrayList<>();
@@ -217,4 +221,43 @@ class RefuelInterpreterTest {
         });
         assertEquals("Action nicht definiert: " + action, exception.getMessage());
     }
+
+
+    // read
+    // new
+    // delete
+    // modify
+
+    @Test
+    void executeNewCommand() {       
+        this.action = Mockito.mock(Actions.class);
+        Mockito.when(action.ordinal()).thenReturn(Actions.NEW.ordinal());
+        
+        Refuel refuel = Mockito.mock(Refuel.class);
+        Mockito.doNothing().when(refuelRepository).writeRefuel(refuel);
+
+        refuelInterpreter = new RefuelInterpreter(new ArrayList<String>(), mockedDataHandler);
+        refuelInterpreter.executeCommands();
+        
+        verify(refuelRepository, times(1)).writeRefuel(refuel);
+        
+        // mockList.add("one");
+        // Mockito.verify(mockList).add("one");
+        // assertEquals(0, mockList.size());
+
+        // Mockito.when(mockList.size()).thenReturn(100);
+        // assertEquals(100, mockList.size());
+    }
+
+    @Test
+    void executeReadCommand() {
+        mockList.add(new Refuel(0, null, null, null, null, null));
+        // Mockito.when(mockedRefuelRepository.readRefuels(null, null).thenReturn(mockList));
+    }
+
+    @Test
+    void executeDeleteCommand() {}
+
+    @Test
+    void executeModifyCommand() {}
 }
