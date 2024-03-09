@@ -28,6 +28,36 @@ public class RefuelInterpreter extends CommandInterpreter {
         super(args);
         this.dataHandler = dataHandler;
     }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLiters(Liter liters) {
+        this.liters = liters;
+    }
+
+    public void setPricePerLiter(Euro pricePerLiter) {
+        this.pricePerLiter = pricePerLiter;
+    }
+
+    public void setFuelType(FuelType fuelType) {
+        this.fuelType = fuelType;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setGasStation(GasStation gasStation) {
+        this.gasStation = gasStation;
+    }
+
+    public void setRepoIfIsNull() {
+        if (refuelRepository == null) {
+            this.refuelRepository = RefuelRepository.getInstance(dataHandler);
+        }
+    }
 
     public Liter getLiters() {
         return liters;
@@ -59,6 +89,7 @@ public class RefuelInterpreter extends CommandInterpreter {
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
+        setRepoIfIsNull();
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
@@ -74,14 +105,15 @@ public class RefuelInterpreter extends CommandInterpreter {
         if (arguments_list.size() < NUM_OF_MANDATORY_ARGS)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
             
-            this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
-            this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
+        this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
+        this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
+        this.id = refuelRepository.getNextRefuelId();
 
-            int index = NUM_OF_MANDATORY_ARGS;
-            while (arguments_list.size() > index) {
-                parseOptionalArguments(index);
-                index += 2;
-            }
+        int index = NUM_OF_MANDATORY_ARGS;
+        while (arguments_list.size() > index) {
+            parseOptionalArguments(index);
+            index += 2;
+        }
     }
     
     @Override
@@ -132,16 +164,13 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
-        this.id = refuelRepository.getNextRefuelId();
-        
         Refuel refuel = new Refuel(
-                this.id,
-                liters,
-                pricePerLiter,
-                fuelType,
-                gasStation,
-                date
+            id,
+            liters,
+            pricePerLiter,
+            fuelType,
+            gasStation,
+            date
         );
 
         switch (this.action) {

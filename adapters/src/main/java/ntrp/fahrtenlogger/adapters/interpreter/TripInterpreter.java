@@ -26,6 +26,32 @@ public class TripInterpreter extends CommandInterpreter {
         this.dataHandler = dataHandler;
     }
 
+    public void setFromPlace(Place fromPlace) {
+        this.fromPlace = fromPlace;
+    }
+
+    public void setToPlace(Place toPlace) {
+        this.toPlace = toPlace;
+    }
+
+    public void setDistance(Kilometer distance) {
+        this.distance = distance;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTripRepoIfIsNull() {
+        if (tripRepository == null) {
+            this.tripRepository = TripRepository.getInstance(dataHandler);
+        }
+    }
+  
     public Place getFromPlace() {
         return fromPlace;
     }
@@ -52,6 +78,7 @@ public class TripInterpreter extends CommandInterpreter {
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
+        setTripRepoIfIsNull();
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
@@ -67,9 +94,10 @@ public class TripInterpreter extends CommandInterpreter {
     protected void parseNewCommands() throws IllegalArgumentException {
         if (arguments_list.size() < num_of_mandatory_arguments)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
-        
+       
         this.fromPlace = new Place(arguments_list.get(1));
         this.toPlace = new Place(arguments_list.get(2));
+        this.id = tripRepository.getNextTripId();
         
         int index = num_of_mandatory_arguments;
         while (arguments_list.size() > index) {
@@ -158,11 +186,8 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        this.tripRepository = TripRepository.getInstance(dataHandler);
-        this.id = tripRepository.getNextTripId();
-
         Trip trip = new Trip(
-            this.id,
+            id,
             fromPlace,
             toPlace,
             distance,
