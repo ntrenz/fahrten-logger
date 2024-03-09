@@ -24,6 +24,30 @@ public class RefuelInterpreter extends CommandInterpreter {
     private final DataHandlerInterface dataHandler;
     private RefuelRepository refuelRepository;
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLiters(Liter liters) {
+        this.liters = liters;
+    }
+
+    public void setPricePerLiter(Euro pricePerLiter) {
+        this.pricePerLiter = pricePerLiter;
+    }
+
+    public void setFuelType(FuelType fuelType) {
+        this.fuelType = fuelType;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setGasStation(GasStation gasStation) {
+        this.gasStation = gasStation;
+    }
+
     public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
