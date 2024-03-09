@@ -28,36 +28,6 @@ public class RefuelInterpreter extends CommandInterpreter {
         super(args);
         this.dataHandler = dataHandler;
     }
-    
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setLiters(Liter liters) {
-        this.liters = liters;
-    }
-
-    public void setPricePerLiter(Euro pricePerLiter) {
-        this.pricePerLiter = pricePerLiter;
-    }
-
-    public void setFuelType(FuelType fuelType) {
-        this.fuelType = fuelType;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public void setGasStation(GasStation gasStation) {
-        this.gasStation = gasStation;
-    }
-
-    public void setRepoIfIsNull() {
-        if (refuelRepository == null) {
-            this.refuelRepository = RefuelRepository.getInstance(dataHandler);
-        }
-    }
 
     public Liter getLiters() {
         return liters;
