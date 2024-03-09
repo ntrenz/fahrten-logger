@@ -105,14 +105,15 @@ public class RefuelInterpreter extends CommandInterpreter {
         if (arguments_list.size() < NUM_OF_MANDATORY_ARGS)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
             
-            this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
-            this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
+        this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
+        this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
+        this.id = refuelRepository.getNextRefuelId();
 
-            int index = NUM_OF_MANDATORY_ARGS;
-            while (arguments_list.size() > index) {
-                parseOptionalArguments(index);
-                index += 2;
-            }
+        int index = NUM_OF_MANDATORY_ARGS;
+        while (arguments_list.size() > index) {
+            parseOptionalArguments(index);
+            index += 2;
+        }
     }
     
     @Override
@@ -163,16 +164,13 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
-        this.id = refuelRepository.getNextRefuelId();
-        
         Refuel refuel = new Refuel(
-                this.id,
-                liters,
-                pricePerLiter,
-                fuelType,
-                gasStation,
-                date
+            id,
+            liters,
+            pricePerLiter,
+            fuelType,
+            gasStation,
+            date
         );
 
         switch (this.action) {
