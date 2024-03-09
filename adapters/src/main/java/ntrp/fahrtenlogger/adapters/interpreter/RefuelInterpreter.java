@@ -24,6 +24,11 @@ public class RefuelInterpreter extends CommandInterpreter {
     private final DataHandlerInterface dataHandler;
     private RefuelRepository refuelRepository;
 
+    public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
+        super(args);
+        this.dataHandler = dataHandler;
+    }
+    
     public void setId(int id) {
         this.id = id;
     }
@@ -48,9 +53,10 @@ public class RefuelInterpreter extends CommandInterpreter {
         this.gasStation = gasStation;
     }
 
-    public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
-        super(args);
-        this.dataHandler = dataHandler;
+    public void setRepoIfIsNull() {
+        if (refuelRepository == null) {
+            this.refuelRepository = RefuelRepository.getInstance(dataHandler);
+        }
     }
 
     public Liter getLiters() {
@@ -83,6 +89,7 @@ public class RefuelInterpreter extends CommandInterpreter {
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
+        setRepoIfIsNull();
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
