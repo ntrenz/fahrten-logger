@@ -13,8 +13,8 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
 public class TripInterpreter extends CommandInterpreter {
     private final int num_of_mandatory_arguments = 3;
-    private Place from_place;
-    private Place to_place;
+    private Place fromPlace;
+    private Place toPlace;
     private Kilometer distance = new Kilometer(0);
     private LocalDate date = LocalDate.now();
     private final DataHandlerInterface dataHandler;
@@ -26,12 +26,12 @@ public class TripInterpreter extends CommandInterpreter {
         this.dataHandler = dataHandler;
     }
 
-    public Place getFrom_place() {
-        return from_place;
+    public Place getFromPlace() {
+        return fromPlace;
     }
 
-    public Place getTo_place() {
-        return to_place;
+    public Place getToPlace() {
+        return toPlace;
     }
 
     public Kilometer getDistance() {
@@ -68,8 +68,8 @@ public class TripInterpreter extends CommandInterpreter {
         if (arguments_list.size() < num_of_mandatory_arguments)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
         
-        this.from_place = new Place(arguments_list.get(1));
-        this.to_place = new Place(arguments_list.get(2));
+        this.fromPlace = new Place(arguments_list.get(1));
+        this.toPlace = new Place(arguments_list.get(2));
         
         int index = num_of_mandatory_arguments;
         while (arguments_list.size() > index) {
@@ -96,9 +96,9 @@ public class TripInterpreter extends CommandInterpreter {
                 }
             }
             else if (arguments_list.get(index).equals("-fp"))
-                this.from_place = new Place(arguments_list.get(++ index));
+                this.fromPlace = new Place(arguments_list.get(++ index));
             else if (arguments_list.get(index).equals("-tp"))
-                this.to_place = new Place(arguments_list.get(++ index));
+                this.toPlace = new Place(arguments_list.get(++ index));
             else if (arguments_list.get(index).equals("-id")) {
                 try {
                     this.id = Integer.parseInt(arguments_list.get(++ index));       
@@ -116,9 +116,9 @@ public class TripInterpreter extends CommandInterpreter {
         int index = 1;
         while (arguments_list.size() > index) {
             if (arguments_list.get(index).equals("-fp"))
-                this.from_place = new Place(arguments_list.get(++ index));
+                this.fromPlace = new Place(arguments_list.get(++ index));
             else if (arguments_list.get(index).equals("-tp"))
-                this.to_place = new Place(arguments_list.get(++ index));
+                this.toPlace = new Place(arguments_list.get(++ index));
             parseOptionalArguments(index);
             index += 2;
         }
@@ -148,8 +148,8 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public String toString() {
-        return "TripInterpreter{from_place=" + from_place +
-                ", to_place=" + to_place +
+        return "TripInterpreter{from_place=" + fromPlace +
+                ", to_place=" + toPlace +
                 ", distance=" + distance +
                 ", date=" + date +
                 ", action=" + action +
@@ -163,15 +163,15 @@ public class TripInterpreter extends CommandInterpreter {
 
         Trip trip = new Trip(
             this.id,
-            from_place,
-            to_place,
+            fromPlace,
+            toPlace,
             distance,
             date
         );
 
         switch (this.action) {
             case READ -> {
-                List<Trip> readTrips = tripRepository.readTrips(from_place, to_place, date);
+                List<Trip> readTrips = tripRepository.readTrips(fromPlace, toPlace, date);
                 readTrips.forEach(System.out::println);
             }
             case NEW -> tripRepository.writeTrip(trip);
