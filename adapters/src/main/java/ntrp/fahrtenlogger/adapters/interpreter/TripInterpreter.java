@@ -97,6 +97,7 @@ public class TripInterpreter extends CommandInterpreter {
         
         this.from_place = new Place(arguments_list.get(1));
         this.to_place = new Place(arguments_list.get(2));
+        this.id = tripRepository.getNextTripId();
         
         int index = num_of_mandatory_arguments;
         while (arguments_list.size() > index) {
@@ -185,11 +186,8 @@ public class TripInterpreter extends CommandInterpreter {
 
     @Override
     public void executeCommands() {
-        this.tripRepository = TripRepository.getInstance(dataHandler);
-        this.id = tripRepository.getNextTripId();
-
         Trip trip = new Trip(
-            this.id,
+            id,
             from_place,
             to_place,
             distance,
