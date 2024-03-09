@@ -27,6 +27,7 @@ public class RefuelInterpreter extends CommandInterpreter {
     public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
+        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
     }
 
     public Liter getLiters() {
@@ -59,7 +60,6 @@ public class RefuelInterpreter extends CommandInterpreter {
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
-        refuelRepository = RefuelRepository.getInstance(dataHandler);
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
