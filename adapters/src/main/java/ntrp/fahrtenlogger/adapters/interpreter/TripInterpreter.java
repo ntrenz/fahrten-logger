@@ -26,6 +26,32 @@ public class TripInterpreter extends CommandInterpreter {
         this.dataHandler = dataHandler;
     }
 
+    public void setFrom_place(Place from_place) {
+        this.from_place = from_place;
+    }
+
+    public void setTo_place(Place to_place) {
+        this.to_place = to_place;
+    }
+
+    public void setDistance(Kilometer distance) {
+        this.distance = distance;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTripRepoIfIsNull() {
+        if (tripRepository == null) {
+            this.tripRepository = TripRepository.getInstance(dataHandler);
+        }
+    }
+
     public Place getFrom_place() {
         return from_place;
     }
@@ -52,6 +78,7 @@ public class TripInterpreter extends CommandInterpreter {
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
+        setTripRepoIfIsNull();
         parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
