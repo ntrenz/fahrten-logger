@@ -1,6 +1,10 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,47 +23,46 @@ import org.mockito.Mockito;
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.Place;
-import ntrp.fahrtenlogger.domain.Entities.Refuel;
+import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
-class TripInterpreterTest {
-    // Test Cases:
-    //
-    // - Not enough Arguments
-    // - NEW
-    // - MODIFY
-    // - DELETE
-    // - READ
-    // - Unknown Action
+class TripInterpreterParsingTest {
+    @Mock(name = "dataHandler")
+    static DataHandlerInterface mockedDataHandler;
+    @Mock(name = "tripRepository")
+    static TripRepository mockedTripRepository;
     @Mock
-    DataHandlerInterface mockedDataHandler;
-    @Mock
-    TripRepository tripRepository;
-    @Mock
-    List<Refuel> mockList;
+    static List<Trip> mockList;
+    @Mock(name = "action")
+    static Actions mockedAction;
 
     @InjectMocks
     TripInterpreter tripInterpreter;
 
-    @Before
-    void testSetup() {
-        Mockito.when(TripRepository.getInstance(mockedDataHandler)).thenReturn(tripRepository);
+    @BeforeAll
+    static void testSetup() {
+        mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        Mockito.when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<Trip>());
+        Mockito.when(TripRepository.getInstance(mockedDataHandler)).thenReturn(mockedTripRepository);
     }
-
+    
     @BeforeEach
     void methodSetup() {
-        this.mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        // mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
     }
 
     @AfterEach
     void methodTeardown() {
-        this.tripInterpreter = null;
+        reset(mockedDataHandler);
+        tripInterpreter = null;
         mockList = null;
     }
 
     @Test
     void parseCommandWithNotEnoughArgs() {
         List<String> commandsList = new ArrayList<>();
+        mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<>());
         tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -83,7 +86,7 @@ class TripInterpreterTest {
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
     }
@@ -110,7 +113,7 @@ class TripInterpreterTest {
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
         assertEquals(date, tripInterpreter.getDate());
@@ -159,7 +162,7 @@ class TripInterpreterTest {
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
     }
@@ -188,7 +191,7 @@ class TripInterpreterTest {
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
         assertEquals(date, tripInterpreter.getDate());
@@ -240,7 +243,7 @@ class TripInterpreterTest {
         tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
-        assertEquals(Actions.READ, tripInterpreter.action);
+        assertEquals(Actions.READ, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
     }
@@ -268,7 +271,7 @@ class TripInterpreterTest {
         tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
-        assertEquals(Actions.READ, tripInterpreter.action);
+        assertEquals(Actions.READ, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
