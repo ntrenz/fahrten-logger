@@ -1,5 +1,19 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.reset;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,54 +27,34 @@ import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.Before;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
-class RefuelInterpreterTest {
-    // Test Cases:
-    //
-    // - Not enough arguments
-    // - NEW
-    // - MODIFY
-    // - DELETE
-    // - READ
-    // - Unknown Action
-
+class RefuelInterpreterParsingTest {
+    @Mock(name = "dataHandler")
+    static DataHandlerInterface mockedDataHandler;
+    @Mock(name = "refuelRepository")
+    static RefuelRepository mockedRefuelRepository;
     @Mock
-    DataHandlerInterface mockedDataHandler;
-    @Mock
-    RefuelRepository refuelRepository;
-    @Mock
-    List<Refuel> mockList;
-    @Mock(name="action")
-    Actions action;
+    static List<Refuel> mockList;
+    @Mock(name = "action")
+    static Actions mockedAction;
 
     @InjectMocks
     RefuelInterpreter refuelInterpreter;
 
-    @Before
-    void testSetup() {
-        Mockito.when(RefuelRepository.getInstance(mockedDataHandler)).thenReturn(refuelRepository);
+    @BeforeAll
+    static void testSetup() {
+        mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        Mockito.when(mockedDataHandler.readAllRefuels()).thenReturn(new ArrayList<Refuel>());
+        Mockito.when(RefuelRepository.getInstance(mockedDataHandler)).thenReturn(mockedRefuelRepository);
     }
 
     @BeforeEach
     void methodSetup() {
-        this.mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        
     }
 
     @AfterEach
     void methodTeardown() {
+        reset(mockedDataHandler);
         refuelInterpreter = null;
         mockList = null;
     }
@@ -68,7 +62,7 @@ class RefuelInterpreterTest {
     @Test
     void parseCommandWithNotEnoughArguments() {
         List<String> commandsList = new ArrayList<>();
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             refuelInterpreter.parseCommands();
@@ -91,7 +85,7 @@ class RefuelInterpreterTest {
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(action, refuelInterpreter.action);
+        assertEquals(action, refuelInterpreter.getAction());
         assertEquals(liter, refuelInterpreter.getLiters());
         assertEquals(pricePerLiter, refuelInterpreter.getPricePerLiter());
     }
@@ -128,7 +122,7 @@ class RefuelInterpreterTest {
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.DELETE, refuelInterpreter.action);
+        assertEquals(Actions.DELETE, refuelInterpreter.getAction());
         assertNull(refuelInterpreter.getDate());
         assertEquals(0, refuelInterpreter.getId());
     }
@@ -149,7 +143,7 @@ class RefuelInterpreterTest {
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.DELETE, refuelInterpreter.action);
+        assertEquals(Actions.DELETE, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(id, refuelInterpreter.getId());
     }
@@ -162,7 +156,7 @@ class RefuelInterpreterTest {
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.READ, refuelInterpreter.action);
+        assertEquals(Actions.READ, refuelInterpreter.getAction());
         assertNull(refuelInterpreter.getDate());
         assertEquals(0, refuelInterpreter.getId());
     }
@@ -186,7 +180,7 @@ class RefuelInterpreterTest {
 
         refuelInterpreter.parseCommands();
         
-        assertEquals(Actions.READ, refuelInterpreter.action);
+        assertEquals(Actions.READ, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(fuelType, refuelInterpreter.getFuelType());
         assertEquals(gasStation, refuelInterpreter.getGasStation());
@@ -221,43 +215,4 @@ class RefuelInterpreterTest {
         });
         assertEquals("Action nicht definiert: " + action, exception.getMessage());
     }
-
-
-    // read
-    // new
-    // delete
-    // modify
-
-    @Test
-    void executeNewCommand() {       
-        this.action = Mockito.mock(Actions.class);
-        Mockito.when(action.ordinal()).thenReturn(Actions.NEW.ordinal());
-        
-        Refuel refuel = Mockito.mock(Refuel.class);
-        Mockito.doNothing().when(refuelRepository).writeRefuel(refuel);
-
-        refuelInterpreter = new RefuelInterpreter(new ArrayList<String>(), mockedDataHandler);
-        refuelInterpreter.executeCommands();
-        
-        verify(refuelRepository, times(1)).writeRefuel(refuel);
-        
-        // mockList.add("one");
-        // Mockito.verify(mockList).add("one");
-        // assertEquals(0, mockList.size());
-
-        // Mockito.when(mockList.size()).thenReturn(100);
-        // assertEquals(100, mockList.size());
-    }
-
-    @Test
-    void executeReadCommand() {
-        mockList.add(new Refuel(0, null, null, null, null, null));
-        // Mockito.when(mockedRefuelRepository.readRefuels(null, null).thenReturn(mockList));
-    }
-
-    @Test
-    void executeDeleteCommand() {}
-
-    @Test
-    void executeModifyCommand() {}
 }
