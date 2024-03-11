@@ -1,6 +1,10 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,32 +13,57 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
+import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.Place;
+import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
-class TripInterpreterTest {
-    // Test Cases:
-    //
-    // - Not enough Arguments
-    // - NEW
-    // - MODIFY
-    // - DELETE
-    // - READ
-    // - Unknown Action
+class TripInterpreterParsingTest {
+    @Mock(name = "dataHandler")
+    static DataHandlerInterface mockedDataHandler;
+    @Mock(name = "tripRepository")
+    static TripRepository mockedTripRepository;
+    @Mock
+    static List<Trip> mockList;
+    @Mock(name = "action")
+    static Actions mockedAction;
 
+    @InjectMocks
     TripInterpreter tripInterpreter;
+
+    @BeforeAll
+    static void testSetup() {
+        mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        Mockito.when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<Trip>());
+        Mockito.when(TripRepository.getInstance(mockedDataHandler)).thenReturn(mockedTripRepository);
+    }
+    
+    @BeforeEach
+    void methodSetup() {
+        // mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+    }
 
     @AfterEach
     void methodTeardown() {
-        this.tripInterpreter = null;
+        reset(mockedDataHandler);
+        tripInterpreter = null;
+        mockList = null;
     }
 
     @Test
     void parseCommandWithNotEnoughArgs() {
         List<String> commandsList = new ArrayList<>();
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<>());
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
@@ -53,11 +82,11 @@ class TripInterpreterTest {
         commandsList.add(fromPlace.toString());
         commandsList.add(toPlace.toString());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
     }
@@ -80,11 +109,11 @@ class TripInterpreterTest {
         commandsList.add("-di");
         commandsList.add(distance.toString());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
         assertEquals(date, tripInterpreter.getDate());
@@ -98,7 +127,7 @@ class TripInterpreterTest {
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
@@ -114,7 +143,7 @@ class TripInterpreterTest {
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(UnsupportedOperationException.class, () -> {
             tripInterpreter.parseCommands();
@@ -129,11 +158,11 @@ class TripInterpreterTest {
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
     }
@@ -158,11 +187,11 @@ class TripInterpreterTest {
         commandsList.add("-id");
         commandsList.add(String.valueOf(id));
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
 
-        assertEquals(action, tripInterpreter.action);
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
         assertEquals(date, tripInterpreter.getDate());
@@ -179,7 +208,7 @@ class TripInterpreterTest {
         commandsList.add("-id");
         commandsList.add(id);
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
@@ -197,7 +226,7 @@ class TripInterpreterTest {
         commandsList.add("-d");
         commandsList.add(dateString);
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
@@ -211,10 +240,10 @@ class TripInterpreterTest {
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
-        assertEquals(Actions.READ, tripInterpreter.action);
+        assertEquals(Actions.READ, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
     }
@@ -239,10 +268,10 @@ class TripInterpreterTest {
         commandsList.add("-di");
         commandsList.add(distance.toString());
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
-        assertEquals(Actions.READ, tripInterpreter.action);
+        assertEquals(Actions.READ, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
@@ -261,7 +290,7 @@ class TripInterpreterTest {
         commandsList.add("-d");
         commandsList.add(dateString);
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
@@ -279,7 +308,7 @@ class TripInterpreterTest {
         commandsList.add("-di");
         commandsList.add(distance);
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();
@@ -294,7 +323,7 @@ class TripInterpreterTest {
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action);
 
-        tripInterpreter = new TripInterpreter(commandsList, null);
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             tripInterpreter.parseCommands();

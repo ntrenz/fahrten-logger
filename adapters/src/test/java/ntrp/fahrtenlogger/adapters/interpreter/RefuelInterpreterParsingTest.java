@@ -1,13 +1,9 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
-import org.junit.jupiter.api.Test;
-
-import ntrp.fahrtenlogger.domain.Entities.GasStation;
-import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
-import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
-import ntrp.fahrtenlogger.domain.data.FuelType;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.reset;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,28 +12,57 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
-class RefuelInterpreterTest {
-    // Test Cases:
-    // 
-    // - Not enough arguments
-    // - NEW
-    // - MODIFY
-    // - DELETE
-    // - READ
-    // - Unknown Action
+import ntrp.fahrtenlogger.application.DataHandlerInterface;
+import ntrp.fahrtenlogger.application.RefuelRepository;
+import ntrp.fahrtenlogger.domain.Entities.GasStation;
+import ntrp.fahrtenlogger.domain.Entities.Refuel;
+import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
+import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
+import ntrp.fahrtenlogger.domain.data.FuelType;
 
+class RefuelInterpreterParsingTest {
+    @Mock(name = "dataHandler")
+    static DataHandlerInterface mockedDataHandler;
+    @Mock(name = "refuelRepository")
+    static RefuelRepository mockedRefuelRepository;
+    @Mock
+    static List<Refuel> mockList;
+    @Mock(name = "action")
+    static Actions mockedAction;
+
+    @InjectMocks
     RefuelInterpreter refuelInterpreter;
+
+    @BeforeAll
+    static void testSetup() {
+        mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+        Mockito.when(mockedDataHandler.readAllRefuels()).thenReturn(new ArrayList<Refuel>());
+        Mockito.when(RefuelRepository.getInstance(mockedDataHandler)).thenReturn(mockedRefuelRepository);
+    }
+
+    @BeforeEach
+    void methodSetup() {
+        
+    }
 
     @AfterEach
     void methodTeardown() {
+        reset(mockedDataHandler);
         refuelInterpreter = null;
+        mockList = null;
     }
 
     @Test
     void parseCommandWithNotEnoughArguments() {
         List<String> commandsList = new ArrayList<>();
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             refuelInterpreter.parseCommands();
@@ -55,12 +80,12 @@ class RefuelInterpreterTest {
         commandsList.add(action.toString().toLowerCase());
         commandsList.add(liter.toString());
         commandsList.add(pricePerLiter.toString());
-        
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(action, refuelInterpreter.action);
+        assertEquals(action, refuelInterpreter.getAction());
         assertEquals(liter, refuelInterpreter.getLiters());
         assertEquals(pricePerLiter, refuelInterpreter.getPricePerLiter());
     }
@@ -69,19 +94,19 @@ class RefuelInterpreterTest {
     void parseCommandNewToFewArguments() {
         List<String> commandsList = new ArrayList<>();
         commandsList.add("new");
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             refuelInterpreter.parseCommands();
         });
         assertEquals("Nicht genügend Parameter!", exception.getMessage());
     }
-    
+
     @Test
     void parseCommandModify() {
         List<String> commandsList = new ArrayList<>();
         commandsList.add("modify");
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(UnsupportedOperationException.class, () -> {
             refuelInterpreter.parseCommands();
@@ -93,10 +118,11 @@ class RefuelInterpreterTest {
     void parseCommandDelete() {
         List<String> commandsList = new ArrayList<>();
         commandsList.add("delete");
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
-        assertEquals(Actions.DELETE, refuelInterpreter.action);
+
+        assertEquals(Actions.DELETE, refuelInterpreter.getAction());
         assertNull(refuelInterpreter.getDate());
         assertEquals(0, refuelInterpreter.getId());
     }
@@ -105,7 +131,7 @@ class RefuelInterpreterTest {
     void parseCommandDeleteWithDateAndId() {
         String dateString = "01.03.2024";
         int id = 1;
-        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));;
+        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add("delete");
@@ -113,22 +139,24 @@ class RefuelInterpreterTest {
         commandsList.add(dateString);
         commandsList.add("-id");
         commandsList.add(String.valueOf(id));
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
-        assertEquals(Actions.DELETE, refuelInterpreter.action);
+
+        assertEquals(Actions.DELETE, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(id, refuelInterpreter.getId());
     }
-    
+
     @Test
     void parseCommandRead() {
         List<String> commandsList = new ArrayList<>();
         commandsList.add("read");
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
-        assertEquals(Actions.READ, refuelInterpreter.action);
+
+        assertEquals(Actions.READ, refuelInterpreter.getAction());
         assertNull(refuelInterpreter.getDate());
         assertEquals(0, refuelInterpreter.getId());
     }
@@ -136,7 +164,7 @@ class RefuelInterpreterTest {
     @Test
     void parseCommandReadWithArgs() {
         String dateString = "01.03.2024";
-        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));;
+        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         FuelType fuelType = FuelType.E5;
         GasStation gasStation = new GasStation("Tanke");
 
@@ -148,10 +176,11 @@ class RefuelInterpreterTest {
         commandsList.add(fuelType.toString());
         commandsList.add("-gs");
         commandsList.add(gasStation.getName());
-        refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
-        assertEquals(Actions.READ, refuelInterpreter.action);
+        
+        assertEquals(Actions.READ, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(fuelType, refuelInterpreter.getFuelType());
         assertEquals(gasStation, refuelInterpreter.getGasStation());
@@ -166,7 +195,7 @@ class RefuelInterpreterTest {
         commandsList.add("read");
         commandsList.add("-ft");
         commandsList.add(wrongFuelType);
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             refuelInterpreter.parseCommands();
@@ -179,7 +208,7 @@ class RefuelInterpreterTest {
         String action = "UNKNOWN";
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action);
-        this.refuelInterpreter = new RefuelInterpreter(commandsList, null);
+        this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             refuelInterpreter.parseCommands();
