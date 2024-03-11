@@ -53,7 +53,7 @@ public class TripInterpreter extends CommandInterpreter {
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
-        parseAction(arguments_list.get(0));
+        this.action = parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
             case MODIFY -> parseModifyCommands();

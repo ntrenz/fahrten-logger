@@ -3,7 +3,8 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import java.util.List;
 
 /**
- * Superclass for all Interpreter Classes. Defines an action attribute {@code action} and a method {@code handleCommands} to handle the commands.
+ * Superclass for all Interpreter Classes. Defines an action attribute
+ * {@code action} and a method {@code handleCommands} to handle the commands.
  */
 public abstract class CommandInterpreter {
     final List<String> arguments_list;
@@ -36,7 +37,7 @@ public abstract class CommandInterpreter {
      * @throws IllegalArgumentException - Not enough arguments
      */
     protected abstract void parseModifyCommands() throws IllegalArgumentException;
-    
+
     /**
      * Parses arguments for the command 'DELETE'
      * 
@@ -52,12 +53,14 @@ public abstract class CommandInterpreter {
     protected abstract void parseReadCommands() throws IllegalArgumentException;
 
     /**
-     * Handles the input commands an executes the appropriate methods of the application.
+     * Handles the input commands an executes the appropriate methods of the
+     * application.
      */
     public abstract void executeCommands();
 
     /**
      * Returns the help information of the corresponding command.
+     * 
      * @return help description
      */
     public static String getHelp() {
@@ -65,17 +68,26 @@ public abstract class CommandInterpreter {
     };
 
     /**
-     * Sets the attribute {@code action} to the corresponding action. If argument cannot be parsed, an {@link IllegalArgumentException} is thrown.
+     * Sets the attribute {@code action} to the corresponding action. If argument
+     * cannot be parsed, an {@link IllegalArgumentException} is thrown.
      *
      * @throws IllegalArgumentException when action is not defined
      * @param command the command holding Action information
      */
-    public void parseAction(String command) throws IllegalArgumentException {
+    public Actions parseAction(String command) throws IllegalArgumentException {
         switch (command) {
-            case "n", "new" -> this.action = Actions.NEW;
-            case "m", "modify" -> this.action = Actions.MODIFY;
-            case "d", "delete" -> this.action = Actions.DELETE;
-            case "r", "read" -> this.action = Actions.READ;
+            case "n", "new" -> {
+                return Actions.NEW;
+            }
+            case "m", "modify" -> {
+                return Actions.MODIFY;
+            }
+            case "d", "delete" -> {
+                return Actions.DELETE;
+            }
+            case "r", "read" -> {
+                return Actions.READ;
+            }
             default -> throw new IllegalArgumentException("Action nicht definiert: " + command);
         }
     }

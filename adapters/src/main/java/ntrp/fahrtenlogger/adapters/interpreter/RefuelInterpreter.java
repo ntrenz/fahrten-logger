@@ -60,7 +60,7 @@ public class RefuelInterpreter extends CommandInterpreter {
         // refuel <new:modify:delete> <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>
         if (arguments_list.isEmpty())
             throw new IllegalArgumentException("Not enough Parameters!");
-        parseAction(arguments_list.get(0));
+        this.action = parseAction(arguments_list.get(0));
         switch (this.action) {
             case NEW -> parseNewCommands();
             case MODIFY -> parseModifyCommands(); 
