@@ -48,7 +48,7 @@ class RefuelInterpreterParsingTest {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllRefuels()).thenReturn(new ArrayList<Refuel>());
         try (MockedStatic<RefuelRepository> mockedStaticRefuelRepository = mockStatic(RefuelRepository.class)) {
-            mockedStaticRefuelRepository.when(() -> TripRepository.getInstance(mockedDataHandler))
+            mockedStaticRefuelRepository.when(() -> RefuelRepository.getInstance(mockedDataHandler))
                     .thenReturn(mockedRefuelRepository);
         }
     }
