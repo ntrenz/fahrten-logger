@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
@@ -43,9 +45,12 @@ class TripInterpreterParsingTest {
     static void testSetup() {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<Trip>());
-        Mockito.when(TripRepository.getInstance(mockedDataHandler)).thenReturn(mockedTripRepository);
+        try (MockedStatic<TripRepository> mockedStaticTripRepository = mockStatic(TripRepository.class)) {
+            mockedStaticTripRepository.when(() -> TripRepository.getInstance(mockedDataHandler))
+                    .thenReturn(mockedTripRepository);
+        }
     }
-    
+
     @BeforeEach
     void methodSetup() {
         // mockedDataHandler = Mockito.mock(DataHandlerInterface.class);

@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 
 import java.time.LocalDate;
@@ -17,10 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.RefuelRepository;
+import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
@@ -44,12 +47,15 @@ class RefuelInterpreterParsingTest {
     static void testSetup() {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllRefuels()).thenReturn(new ArrayList<Refuel>());
-        Mockito.when(RefuelRepository.getInstance(mockedDataHandler)).thenReturn(mockedRefuelRepository);
+        try (MockedStatic<RefuelRepository> mockedStaticRefuelRepository = mockStatic(RefuelRepository.class)) {
+            mockedStaticRefuelRepository.when(() -> TripRepository.getInstance(mockedDataHandler))
+                    .thenReturn(mockedRefuelRepository);
+        }
     }
 
     @BeforeEach
     void methodSetup() {
-        
+
     }
 
     @AfterEach
@@ -75,7 +81,7 @@ class RefuelInterpreterParsingTest {
         Actions action = Actions.NEW;
         Liter liter = new Liter(50);
         Euro pricePerLiter = new Euro(1.7);
-        
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
         commandsList.add(liter.toString());
@@ -179,7 +185,7 @@ class RefuelInterpreterParsingTest {
         refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
-        
+
         assertEquals(Actions.READ, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(fuelType, refuelInterpreter.getFuelType());

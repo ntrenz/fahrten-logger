@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,7 +53,10 @@ public class TripInterpreterExecutionTest {
     static void testSetup() {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<Trip>());
-        Mockito.when(TripRepository.getInstance(mockedDataHandler)).thenReturn(mockedTripRepository);
+        try (MockedStatic<TripRepository> mockedStaticTripRepository = mockStatic(TripRepository.class)) {
+            mockedStaticTripRepository.when(() -> TripRepository.getInstance(mockedDataHandler))
+                    .thenReturn(mockedTripRepository);
+        }
     }
 
     @BeforeEach
@@ -81,7 +86,8 @@ public class TripInterpreterExecutionTest {
     void executeReadCommand() {
         when(mockedAction.ordinal()).thenReturn(Actions.READ.ordinal());
         when(mockedTripList.iterator()).thenReturn(new Iterator<Trip>() {
-            private final List<Trip> items = List.of(new Trip(2, null, null, null, null), new Trip(2, null, null, null, null));
+            private final List<Trip> items = List.of(new Trip(2, null, null, null, null),
+                    new Trip(2, null, null, null, null));
             private int iter = 0;
 
             @Override
