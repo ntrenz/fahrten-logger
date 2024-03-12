@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.RefuelRepository;
+import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +54,10 @@ public class RefuelInterpreterExecutionTest {
     static void testSetup() {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllRefuels()).thenReturn(new ArrayList<Refuel>());
-        Mockito.when(RefuelRepository.getInstance(mockedDataHandler)).thenReturn(mockedRefuelRepository);
+        try (MockedStatic<RefuelRepository> mockedStaticRefuelRepository = mockStatic(RefuelRepository.class)) {
+            mockedStaticRefuelRepository.when(() -> TripRepository.getInstance(mockedDataHandler))
+                    .thenReturn(mockedRefuelRepository);
+        }
     }
 
     @BeforeEach
