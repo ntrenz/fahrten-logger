@@ -1,9 +1,7 @@
 package ntrp.fahrtenlogger.adapters.interpreter;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.RefuelRepository;
@@ -79,14 +77,19 @@ public class RefuelInterpreter extends CommandInterpreter {
         if (arguments_list.size() < NUM_OF_MANDATORY_ARGS)
             throw new IllegalArgumentException("Nicht genügend Parameter!");
 
-        this.liters = new Liter(Double.parseDouble(arguments_list.get(1)));
-        this.pricePerLiter = new Euro(Double.parseDouble(arguments_list.get(2)));
+        this.liters = ArgumentsParser.parseLiterFrom(arguments_list.get(1));
+        this.pricePerLiter = ArgumentsParser.parseEuroFrom(arguments_list.get(2));
         this.id = refuelRepository.getNextRefuelId();
 
         int index = NUM_OF_MANDATORY_ARGS;
         while (arguments_list.size() > index) {
-            parseOptionalArguments(index);
-            index += 2;
+            if (arguments_list.get(index).equals("-d"))
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-ft"))
+                this.fuelType = ArgumentsParser.parseFuelTypeFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-gs"))
+                this.gasStation = ArgumentsParser.parseGasStationFrom(arguments_list.get(++index));
+            index ++;
         }
     }
 
@@ -101,10 +104,9 @@ public class RefuelInterpreter extends CommandInterpreter {
         int index = 1;
         while (arguments_list.size() > index) {
             if (arguments_list.get(index).equals("-d"))
-                this.date = LocalDate.parse(arguments_list.get(++index),
-                        DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-id"))
-                this.id = Integer.parseInt(arguments_list.get(++index));
+                this.id = ArgumentsParser.parseIdFrom(arguments_list.get(++index));
             index++;
         }
     }
@@ -114,28 +116,14 @@ public class RefuelInterpreter extends CommandInterpreter {
         this.date = null;
         int index = 1;
         while (arguments_list.size() > index) {
-            parseOptionalArguments(index);
-            index += 2;
+            if (arguments_list.get(index).equals("-d"))
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-ft"))
+                this.fuelType = ArgumentsParser.parseFuelTypeFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-gs"))
+                this.gasStation = ArgumentsParser.parseGasStationFrom(arguments_list.get(++index));
+            index ++;
         }
-    }
-
-    /**
-     * Parses the optional arguments for the action 'NEW'
-     * 
-     * @param index - the starting index of optional arguments
-     */
-    private void parseOptionalArguments(int index) {
-        if (arguments_list.get(index).equals("-d"))
-            this.date = LocalDate.parse(arguments_list.get(++index),
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        else if (arguments_list.get(index).equals("-ft")) {
-            try {
-                this.fuelType = FuelType.valueOf(arguments_list.get(++index).toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Fuel Type is not defined!");
-            }
-        } else if (arguments_list.get(index).equals("-gs"))
-            this.gasStation = new GasStation(arguments_list.get(++index));
     }
 
     @Override
