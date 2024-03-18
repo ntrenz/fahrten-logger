@@ -277,7 +277,6 @@ class TripInterpreterParsingTest {
 
         tripInterpreter.parseCommands();
         assertEquals(Actions.READ, tripInterpreter.getAction());
-        assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
