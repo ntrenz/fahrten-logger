@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +25,6 @@ import org.mockito.Mockito;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.RefuelRepository;
-import ntrp.fahrtenlogger.application.TripRepository;
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
@@ -39,6 +40,7 @@ class RefuelInterpreterParsingTest {
     static List<Refuel> mockList;
     @Mock(name = "action")
     static Actions mockedAction;
+    public static MockedStatic<ArgumentsParser> mockedStaticArgumentsParser;
 
     @InjectMocks
     RefuelInterpreter refuelInterpreter;
@@ -48,9 +50,15 @@ class RefuelInterpreterParsingTest {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllRefuels()).thenReturn(new ArrayList<Refuel>());
         try (MockedStatic<RefuelRepository> mockedStaticRefuelRepository = mockStatic(RefuelRepository.class)) {
-            mockedStaticRefuelRepository.when(() -> RefuelRepository.getInstance(mockedDataHandler))
-                    .thenReturn(mockedRefuelRepository);
+            mockedStaticRefuelRepository.when(() -> RefuelRepository.getInstance(mockedDataHandler)).thenReturn(mockedRefuelRepository);
         }
+        mockedStaticArgumentsParser = mockStatic(ArgumentsParser.class);
+    }
+
+    @AfterAll
+    static void testTeardown() {
+        mockedStaticArgumentsParser.close();
+        
     }
 
     @BeforeEach
@@ -81,6 +89,8 @@ class RefuelInterpreterParsingTest {
         Actions action = Actions.NEW;
         Liter liter = new Liter(50);
         Euro pricePerLiter = new Euro(1.7);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseLiterFrom(liter.toString())).thenReturn(liter);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseEuroFrom(pricePerLiter.toString())).thenReturn(pricePerLiter);
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
@@ -98,8 +108,10 @@ class RefuelInterpreterParsingTest {
 
     @Test
     void parseCommandNewToFewArguments() {
+        Actions action = Actions.NEW;
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("new");
+        commandsList.add(action.toString().toLowerCase());
         this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -110,8 +122,10 @@ class RefuelInterpreterParsingTest {
 
     @Test
     void parseCommandModify() {
+        Actions action = Actions.MODIFY;
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("modify");
+        commandsList.add(action.toString().toLowerCase());
         this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         Throwable exception = assertThrows(UnsupportedOperationException.class, () -> {
@@ -122,25 +136,31 @@ class RefuelInterpreterParsingTest {
 
     @Test
     void parseCommandDelete() {
+        Actions action = Actions.DELETE;
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("delete");
+        commandsList.add(action.toString().toLowerCase());
         this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.DELETE, refuelInterpreter.getAction());
+        assertEquals(action, refuelInterpreter.getAction());
         assertNull(refuelInterpreter.getDate());
         assertEquals(0, refuelInterpreter.getId());
     }
 
     @Test
     void parseCommandDeleteWithDateAndId() {
+        Actions action = Actions.DELETE;
         String dateString = "01.03.2024";
         int id = 1;
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
 
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseIdFrom(String.valueOf(id))).thenReturn(id);
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("delete");
+        commandsList.add(action.toString().toLowerCase());
         commandsList.add("-d");
         commandsList.add(dateString);
         commandsList.add("-id");
@@ -149,33 +169,40 @@ class RefuelInterpreterParsingTest {
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.DELETE, refuelInterpreter.getAction());
+        assertEquals(action, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(id, refuelInterpreter.getId());
     }
 
     @Test
     void parseCommandRead() {
+        Actions action = Actions.READ;
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("read");
+        commandsList.add(action.toString().toLowerCase());
         this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.READ, refuelInterpreter.getAction());
+        assertEquals(action, refuelInterpreter.getAction());
         assertNull(refuelInterpreter.getDate());
         assertEquals(0, refuelInterpreter.getId());
     }
 
     @Test
     void parseCommandReadWithArgs() {
+        Actions action = Actions.READ;
         String dateString = "01.03.2024";
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         FuelType fuelType = FuelType.E5;
         GasStation gasStation = new GasStation("Tanke");
 
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseFuelTypeFrom(fuelType.toString())).thenReturn(fuelType);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseGasStationFrom(gasStation.toString())).thenReturn(gasStation);
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("read");
+        commandsList.add(action.toString().toLowerCase());
         commandsList.add("-d");
         commandsList.add(dateString);
         commandsList.add("-ft");
@@ -186,7 +213,7 @@ class RefuelInterpreterParsingTest {
 
         refuelInterpreter.parseCommands();
 
-        assertEquals(Actions.READ, refuelInterpreter.getAction());
+        assertEquals(action, refuelInterpreter.getAction());
         assertEquals(date, refuelInterpreter.getDate());
         assertEquals(fuelType, refuelInterpreter.getFuelType());
         assertEquals(gasStation, refuelInterpreter.getGasStation());
@@ -195,10 +222,14 @@ class RefuelInterpreterParsingTest {
 
     @Test
     void parseCommandReadWithWrongFT() {
+        Actions action = Actions.READ;
         String wrongFuelType = "DISEL";
 
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseFuelTypeFrom(wrongFuelType)).thenThrow(
+                new IllegalArgumentException("Fuel Type '" + wrongFuelType.toUpperCase() + "' is not defined!"));
+
         List<String> commandsList = new ArrayList<>();
-        commandsList.add("read");
+        commandsList.add(action.toString().toLowerCase());
         commandsList.add("-ft");
         commandsList.add(wrongFuelType);
         this.refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
@@ -206,7 +237,7 @@ class RefuelInterpreterParsingTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             refuelInterpreter.parseCommands();
         });
-        assertEquals("Fuel Type is not defined!", exception.getMessage());
+        assertEquals("Fuel Type '" + wrongFuelType.toUpperCase() + "' is not defined!", exception.getMessage());
     }
 
     @Test
