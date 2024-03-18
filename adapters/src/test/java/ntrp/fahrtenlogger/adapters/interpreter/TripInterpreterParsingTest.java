@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +39,7 @@ class TripInterpreterParsingTest {
     static List<Trip> mockList;
     @Mock(name = "action")
     static Actions mockedAction;
+    public static MockedStatic<ArgumentsParser> mockedStaticArgumentsParser;
 
     @InjectMocks
     TripInterpreter tripInterpreter;
@@ -46,9 +49,14 @@ class TripInterpreterParsingTest {
         mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
         Mockito.when(mockedDataHandler.readAllTrips()).thenReturn(new ArrayList<Trip>());
         try (MockedStatic<TripRepository> mockedStaticTripRepository = mockStatic(TripRepository.class)) {
-            mockedStaticTripRepository.when(() -> TripRepository.getInstance(mockedDataHandler))
-                    .thenReturn(mockedTripRepository);
+            mockedStaticTripRepository.when(() -> TripRepository.getInstance(mockedDataHandler)).thenReturn(mockedTripRepository);
         }
+        mockedStaticArgumentsParser = mockStatic(ArgumentsParser.class);
+    }
+
+    @AfterAll
+    static void testTeardown() {
+        mockedStaticArgumentsParser.close();
     }
 
     @BeforeEach
@@ -82,6 +90,9 @@ class TripInterpreterParsingTest {
         Place fromPlace = new Place("FROM_PLACE");
         Place toPlace = new Place("TO_PLACE");
 
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(fromPlace.toString())).thenReturn(fromPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(toPlace.toString())).thenReturn(toPlace);
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
         commandsList.add(fromPlace.toString());
@@ -104,6 +115,11 @@ class TripInterpreterParsingTest {
         String dateString = "01.03.2024";
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         Kilometer distance = new Kilometer(5);
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(fromPlace.toString())).thenReturn(fromPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(toPlace.toString())).thenReturn(toPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseKilometerFrom(distance.toString())).thenReturn(distance);
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
@@ -181,6 +197,11 @@ class TripInterpreterParsingTest {
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         int id = 1;
 
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(fromPlace.toString())).thenReturn(fromPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(toPlace.toString())).thenReturn(toPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseIdFrom(String.valueOf(id))).thenReturn(id);
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
         commandsList.add("-fp");
@@ -208,6 +229,8 @@ class TripInterpreterParsingTest {
         Actions action = Actions.DELETE;
         String id = "ID";
 
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseIdFrom(String.valueOf(id))).thenThrow(new IllegalArgumentException("ID must be an integer!"));
+
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
         commandsList.add("-id");
@@ -225,6 +248,8 @@ class TripInterpreterParsingTest {
     void parseCommandDeleteWithInvalidDate() {
         Actions action = Actions.DELETE;
         String dateString = "01-03-2024";
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenThrow(new IllegalArgumentException("Date could not be parsed! (Date format must be: DD.MM.YYYY)"));
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
@@ -248,7 +273,7 @@ class TripInterpreterParsingTest {
         tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
-        assertEquals(Actions.READ, tripInterpreter.getAction());
+        assertEquals(action, tripInterpreter.getAction());
         assertNull(tripInterpreter.getDate());
         assertEquals(0, tripInterpreter.getId());
     }
@@ -261,6 +286,11 @@ class TripInterpreterParsingTest {
         String dateString = "01.03.2024";
         LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
         Kilometer distance = new Kilometer(5);
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(fromPlace.toString())).thenReturn(fromPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(toPlace.toString())).thenReturn(toPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseKilometerFrom(distance.toString())).thenReturn(distance);
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
@@ -276,7 +306,7 @@ class TripInterpreterParsingTest {
         tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
 
         tripInterpreter.parseCommands();
-        assertEquals(Actions.READ, tripInterpreter.getAction());
+        assertEquals(action, tripInterpreter.getAction());
         assertEquals(0, tripInterpreter.getId());
         assertEquals(fromPlace, tripInterpreter.getFromPlace());
         assertEquals(toPlace, tripInterpreter.getToPlace());
@@ -288,6 +318,8 @@ class TripInterpreterParsingTest {
     void parseCommandReadWithWrongDateFormat() {
         Actions action = Actions.READ;
         String dateString = "01-03-2024";
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenThrow(new IllegalArgumentException("Date could not be parsed! (Date format must be: DD.MM.YYYY)"));
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
@@ -306,6 +338,8 @@ class TripInterpreterParsingTest {
     void parseCommandReadWithWrongDistanceFormat() {
         Actions action = Actions.READ;
         String distance = "5km";
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseKilometerFrom(distance)).thenThrow(new IllegalArgumentException("Distance must be a number! (Number format for Distances is: X.X)"));
 
         List<String> commandsList = new ArrayList<>();
         commandsList.add(action.toString().toLowerCase());
