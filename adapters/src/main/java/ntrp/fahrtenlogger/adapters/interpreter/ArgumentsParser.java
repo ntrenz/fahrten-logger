@@ -64,7 +64,7 @@ public final class ArgumentsParser {
         try {
             return FuelType.valueOf(fuelType.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Fuel Type is not defined!");
+            throw new IllegalArgumentException("Fuel Type '" + fuelType.toUpperCase() + "' is not defined!");
         }
     }
 
