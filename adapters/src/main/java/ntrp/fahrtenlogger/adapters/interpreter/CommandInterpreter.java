@@ -53,6 +53,13 @@ public abstract class CommandInterpreter {
     protected abstract void parseReadCommands() throws IllegalArgumentException;
 
     /**
+     * Parses arguments for the command 'ANALYZE'
+     * 
+     * @throws IllegalArgumentException
+     */
+    protected abstract void parseAnalyzeCommands() throws IllegalArgumentException;
+
+    /**
      * Handles the input commands an executes the appropriate methods of the
      * application.
      */
@@ -87,6 +94,9 @@ public abstract class CommandInterpreter {
             }
             case "r", "read" -> {
                 return Actions.READ;
+            }
+            case "a", "analyze" -> {
+                return Actions.ANALYZE;
             }
             default -> throw new IllegalArgumentException("Action nicht definiert: " + command);
         }

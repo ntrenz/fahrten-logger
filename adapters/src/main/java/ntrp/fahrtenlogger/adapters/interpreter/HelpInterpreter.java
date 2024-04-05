@@ -69,4 +69,10 @@ public class HelpInterpreter extends CommandInterpreter {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'parseReadCommands'");
     }
+
+    @Override
+    protected void parseAnalyzeCommands() throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'parseAnalyzeCommands'");
+    }
 }

@@ -127,6 +127,12 @@ public class RefuelInterpreter extends CommandInterpreter {
     }
 
     @Override
+    protected void parseAnalyzeCommands() throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'parseAnalyzeCommands'");
+    }
+
+    @Override
     public void executeCommands() {
         Refuel refuel = new Refuel(
                 id,
