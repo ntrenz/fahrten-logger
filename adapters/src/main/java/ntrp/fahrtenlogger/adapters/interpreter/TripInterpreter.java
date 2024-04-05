@@ -80,27 +80,27 @@ public class TripInterpreter extends CommandInterpreter {
     @Override
     protected void parseNewCommands() throws IllegalArgumentException {
         if (arguments_list.size() < num_of_mandatory_arguments)
-        throw new IllegalArgumentException("Nicht genügend Parameter!");
-        
+            throw new IllegalArgumentException("Nicht genügend Parameter!");
+
         this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(1));
         this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(2));
         this.id = tripRepository.getNextTripId();
-        
+
         int index = num_of_mandatory_arguments;
         while (arguments_list.size() > index) {
             if (arguments_list.get(index).equals("-d"))
-            this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-di"))
-            this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
+                this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
             index++;
         }
     }
-    
+
     @Override
     protected void parseModifyCommands() throws IllegalArgumentException {
         throw new UnsupportedOperationException("Unimplemented method 'parseModifyCommands'");
     }
-    
+
     @Override
     protected void parseDeleteCommands() throws IllegalArgumentException {
         this.date = null;
@@ -109,29 +109,29 @@ public class TripInterpreter extends CommandInterpreter {
             if (arguments_list.get(index).equals("-d")) {
                 this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
             } else if (arguments_list.get(index).equals("-fp"))
-            this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+                this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-tp"))
-            this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+                this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-id")) {
                 this.id = ArgumentsParser.parseIdFrom(arguments_list.get(++index));
             }
             index++;
         }
     }
-    
+
     @Override
     protected void parseReadCommands() throws IllegalArgumentException {
         this.date = null;
         int index = 1;
         while (arguments_list.size() > index) {
             if (arguments_list.get(index).equals("-fp"))
-            this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+                this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-tp"))
-            this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+                this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-d"))
-            this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-di"))
-            this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
+                this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
             index++;
         }
     }
@@ -142,13 +142,13 @@ public class TripInterpreter extends CommandInterpreter {
         int index = 1;
         while (arguments_list.size() > index) {
             if (arguments_list.get(index).equals("-fp"))
-            this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+                this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-tp"))
-            this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+                this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-d"))
-            this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
             else if (arguments_list.get(index).equals("-di"))
-            this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
+                this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
             index++;
         }
     }
