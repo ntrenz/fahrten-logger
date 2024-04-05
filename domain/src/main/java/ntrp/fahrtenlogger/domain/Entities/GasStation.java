@@ -44,9 +44,7 @@ public class GasStation {
      */
     @Override
     public String toString() {
-        return "GasStation{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 
     @Override
