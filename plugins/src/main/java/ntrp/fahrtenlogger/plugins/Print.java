@@ -2,13 +2,16 @@ package ntrp.fahrtenlogger.plugins;
 
 import java.awt.Color;
 
+import ntrp.fahrtenlogger.application.analyzer.PrintColors;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
+
 /**
  * The Print class is a Singleton class which provides functionality for outputting text with various modification options.
  * The modifications that can be made include coloring, bolding, italicizing, and underlining the text.
  * The class also provides methods for adding new-lines and delimiters in the output, and converting the fraction to percentage.
  * The class uses ANSI escape codes to modify the text.
  */
-public class Print {
+public class Print implements PrintInterface {
 
     /**
      * Singleton instance of the Print class.
@@ -106,12 +109,15 @@ public class Print {
      * @param color Color object representing the color to be set.
      * @return Colored text string.
      */
-    public String color(String text, Color color) {
-        int r = color.getRed();
-        int g = color.getGreen();
-        int b = color.getBlue();
+    @Override
+    public String color(String text, PrintColors color) {
+        // Color c = new Color(color.r, color.g, color.b);
 
-        String colorCode = "38;2;" + r + ";" + g + ";" + b + "m";
+        // int r = c.getRed();
+        // int g = c.getGreen();
+        // int b = c.getBlue();
+
+        String colorCode = "38;2;" + color.r + ";" + color.g + ";" + color.b + "m";
         return startAnsiCode(colorCode) + text + endAnsiCode();
     }
 
@@ -121,6 +127,7 @@ public class Print {
      * @param text Text to be bolded.
      * @return Bolded text string.
      */
+    @Override
     public String bold(String text) {
         return startAnsiCode("1m") + text + endAnsiCode();
     }

@@ -1,9 +1,10 @@
 package ntrp.fahrtenlogger.plugins;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 
-import java.awt.*;
+import ntrp.fahrtenlogger.application.analyzer.PrintColors;
+
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,7 +53,7 @@ public class PrintTest {
 
     @Test
     public void testColor() {
-        String coloredText = print.color("This is a test", Color.ORANGE);
+        String coloredText = print.color("This is a test", PrintColors.ORANGE);
         assertTrue(coloredText.startsWith("\u001B[38;2;255;200;0m"));
         assertTrue(coloredText.endsWith("\u001B[0m"));
         assertTrue(coloredText.contains("This is a test"));

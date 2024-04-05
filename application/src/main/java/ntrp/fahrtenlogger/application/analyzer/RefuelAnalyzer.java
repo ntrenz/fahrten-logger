@@ -1,18 +1,18 @@
-package ntrp.fahrtenlogger.plugins;
+package ntrp.fahrtenlogger.application.analyzer;
 
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 
-import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * The 'RefuelAnalyzer' class provides functionality for analyzing refuel events.
+ * The 'RefuelAnalyzer' class provides functionality for analyzing refuel
+ * events.
  * It can calculate total fuel volume refueled, the average price per liter,
  * and provide a detailed analysis for a specific gas station and date.
  */
@@ -26,7 +26,7 @@ public class RefuelAnalyzer {
     /**
      * Print instance used for pretty-printing output.
      */
-    private final Print print;
+    private final PrintInterface print;
 
     /**
      * Formatter for dates.
@@ -38,9 +38,9 @@ public class RefuelAnalyzer {
      *
      * @param refuels the list of refuels to be analyzed.
      */
-    public RefuelAnalyzer(List<Refuel> refuels) {
+    public RefuelAnalyzer(List<Refuel> refuels, PrintInterface printObject) {
         this.refuels = refuels;
-        print = Print.getInstance();
+        print = printObject;
         dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
     }
 
@@ -55,8 +55,7 @@ public class RefuelAnalyzer {
                 refuels.stream()
                         .map(Refuel::getLiters)
                         .map(Liter::volume)
-                        .reduce(0., Double::sum)
-        );
+                        .reduce(0., Double::sum));
     }
 
     /**
@@ -68,7 +67,8 @@ public class RefuelAnalyzer {
      * @return the average price per liter.
      */
     public Euro getAveragePricePerLiter(List<Refuel> refuels) {
-        if (refuels.isEmpty()) return new Euro(0.0);
+        if (refuels.isEmpty())
+            return new Euro(0.0);
 
         double totalSum = refuels.stream()
                 .map(Refuel::getPricePerLiter)
@@ -81,21 +81,24 @@ public class RefuelAnalyzer {
     }
 
     /**
-     * Provides a detailed analysis for refuels at a specific gas station on a certain date.
-     * If the station or date are null, refuels are not filtered for these parameters.
+     * Provides a detailed analysis for refuels at a specific gas station on a
+     * certain date.
+     * If the station or date are null, refuels are not filtered for these
+     * parameters.
      * <p>
-     * This analysis includes the total number of refuels, the gas station (if provided),
+     * This analysis includes the total number of refuels, the gas station (if
+     * provided),
      * the date (if provided), total volume refueled, and the average price.
      *
      * @param gasStation the gas station where the refuels occurred.
-     * @param date the date when the refuels occurred.
+     * @param date       the date when the refuels occurred.
      * @return a string containing a detailed analysis.
      */
     public String getAnalysis(GasStation gasStation, LocalDate date) {
-        List<Refuel> filteredRefuels = refuels.stream().filter(refuel ->
-                (gasStation == null || refuel.getGasStation().equals(gasStation)) &&
-                (date == null || refuel.getDate().equals(date))
-        ).toList();
+        List<Refuel> filteredRefuels = refuels.stream()
+                .filter(refuel -> (gasStation == null || refuel.getGasStation().equals(gasStation)) &&
+                        (date == null || refuel.getDate().equals(date)))
+                .toList();
 
         boolean gasStationProvided = gasStation != null;
         boolean dateProvided = date != null;
@@ -105,24 +108,24 @@ public class RefuelAnalyzer {
         Euro averagePricePerLiter = getAveragePricePerLiter(filteredRefuels);
 
         StringBuilder analysis = new StringBuilder();
-        analysis.append(print.bold(print.color(String.valueOf(count), Color.ORANGE)));
+        analysis.append(print.bold(print.color(String.valueOf(count), PrintColors.ORANGE)));
         analysis.append(count == 1 ? " refuel" : " refuels");
         analysis.append(" recorded");
 
         if (gasStationProvided) {
             analysis.append(" at a gas station in ");
-            analysis.append(print.bold(print.color(gasStation.toString(), Color.ORANGE)));
+            analysis.append(print.bold(print.color(gasStation.toString(), PrintColors.ORANGE)));
         }
 
         if (dateProvided) {
             analysis.append(" on ");
-            analysis.append(print.bold(print.color(dateTimeFormatter.format(date), Color.ORANGE)));
+            analysis.append(print.bold(print.color(dateTimeFormatter.format(date), PrintColors.ORANGE)));
         }
 
         analysis.append(" with a total volume of ");
-        analysis.append(print.bold(print.color(totalVolume.format(), Color.ORANGE)));
+        analysis.append(print.bold(print.color(totalVolume.format(), PrintColors.ORANGE)));
         analysis.append(" at an average price of ");
-        analysis.append(print.bold(print.color(averagePricePerLiter.format() + "/l", Color.ORANGE)));
+        analysis.append(print.bold(print.color(averagePricePerLiter.format() + "/l", PrintColors.ORANGE)));
 
         return analysis.toString();
     }

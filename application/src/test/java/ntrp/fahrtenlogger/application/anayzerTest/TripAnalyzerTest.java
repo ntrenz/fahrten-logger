@@ -1,19 +1,58 @@
-package ntrp.fahrtenlogger.plugins;
+package ntrp.fahrtenlogger.application.anayzerTest;
 
+import ntrp.fahrtenlogger.application.analyzer.PrintColors;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
+import ntrp.fahrtenlogger.application.analyzer.TripAnalyzer;
 import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 
 class TripAnalyzerTest {
+    @Mock
+    static PrintInterface print;
+
+    @InjectMocks
+    TripAnalyzer tripAnalyzer;
+
+    @BeforeAll
+    static void testSetup() {
+        print = Mockito.mock(PrintInterface.class);
+        Mockito.when(print.bold(anyString())).thenReturn(anyString());
+        Mockito.when(print.color(anyString(), any(PrintColors.class))).thenReturn(anyString());
+    }
+
+    @AfterAll
+    static void testTeardown() {
+        // mockedStaticArgumentsParser.close();
+    }
+
+    @BeforeEach
+    void methodSetup() {
+        // mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+    }
+
+    @AfterEach
+    void methodTeardown() {
+        // reset(mockedDataHandler);
+        tripAnalyzer = null;
+    }
 
     @Test
     void getTotalDistance() {
@@ -21,7 +60,7 @@ class TripAnalyzerTest {
         trips.add(new Trip(1, null, null, new Kilometer(45.2), null));
         trips.add(new Trip(2, null, null, new Kilometer(89.3), null));
 
-        TripAnalyzer tripAnalyzer = new TripAnalyzer(trips);
+        tripAnalyzer = new TripAnalyzer(trips, print);
 
         assertEquals(new Kilometer(45.2+89.3), tripAnalyzer.getTotalDistance(trips));
         assertEquals(new Kilometer(0), tripAnalyzer.getTotalDistance(new ArrayList<>()));
@@ -38,7 +77,7 @@ class TripAnalyzerTest {
         trips.add(new Trip(6, new Place("Karlsruhe"), new Place("Geislitz"), new Kilometer(55.5), LocalDate.of(2024, 1, 14)));
         trips.add(new Trip(6, new Place("Geislitz"), new Place("Köln"), new Kilometer(55.5), LocalDate.of(2024, 1, 14)));
 
-        TripAnalyzer tripAnalyzer = new TripAnalyzer(trips);
+        tripAnalyzer = new TripAnalyzer(trips, print);
 
         String query1 = tripAnalyzer.getAnalysis(new Place("Karlsruhe"), null, null);
         String query2 = tripAnalyzer.getAnalysis(new Place("Karlsruhe"), null, LocalDate.of(2024, 2, 23));
