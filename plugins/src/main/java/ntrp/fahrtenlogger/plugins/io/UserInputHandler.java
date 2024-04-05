@@ -2,6 +2,7 @@ package ntrp.fahrtenlogger.plugins.io;
 
 import ntrp.fahrtenlogger.adapters.interpreter.*;
 import ntrp.fahrtenlogger.plugins.DataHandler;
+import ntrp.fahrtenlogger.plugins.Print;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,7 @@ public class UserInputHandler {
      * @param commands String of commands received by user input
      * @return {@link CommandInterpreter} Implementation of an Interpreter
      */
-    public CommandInterpreter handleUserInput(String commands, DataHandler dataHandler) {
+    public CommandInterpreter handleUserInput(String commands, DataHandler dataHandler, Print print) {
         List<String> commands_list = Arrays.stream(commands.split("[\\s*]"))
                 .filter(s -> !Objects.equals(s, ""))
                 .map(String::trim)
@@ -42,10 +43,10 @@ public class UserInputHandler {
         }
         switch (commands_list.get(0)) {
             case "trip" -> {
-                return new TripInterpreter(commands_list.subList(1, commands_list.size()), dataHandler);
+                return new TripInterpreter(commands_list.subList(1, commands_list.size()), dataHandler, print);
             }
             case "refuel" -> {
-                return new RefuelInterpreter(commands_list.subList(1, commands_list.size()), dataHandler);
+                return new RefuelInterpreter(commands_list.subList(1, commands_list.size()), dataHandler, print);
             }
             case "help" -> {
                 return new HelpInterpreter(commands_list.subList(1, commands_list.size()));

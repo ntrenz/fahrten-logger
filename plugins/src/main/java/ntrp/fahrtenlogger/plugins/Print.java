@@ -1,7 +1,5 @@
 package ntrp.fahrtenlogger.plugins;
 
-import java.awt.Color;
-
 import ntrp.fahrtenlogger.application.analyzer.PrintColors;
 import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
 
@@ -21,7 +19,7 @@ public class Print implements PrintInterface {
     /**
      * Private constructor to prevent creating an instance of the class from outer classes.
      */
-    private Print() {}
+    public Print() {}
 
     /**
      * Provides the singleton instance of the Print class.
