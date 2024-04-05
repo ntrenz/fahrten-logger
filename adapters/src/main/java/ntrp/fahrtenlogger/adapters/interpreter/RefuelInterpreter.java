@@ -3,8 +3,10 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import java.time.LocalDate;
 import java.util.List;
 
+import ntrp.fahrtenlogger.application.AnalyzerWrapper;
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.RefuelRepository;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
@@ -20,12 +22,20 @@ public class RefuelInterpreter extends CommandInterpreter {
     private LocalDate date = LocalDate.now();
     private GasStation gasStation;
     private final DataHandlerInterface dataHandler;
+    private PrintInterface print;
     private RefuelRepository refuelRepository;
 
     public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler) {
         super(args);
         this.dataHandler = dataHandler;
         this.refuelRepository = RefuelRepository.getInstance(dataHandler);
+    }
+
+    public RefuelInterpreter(List<String> args, DataHandlerInterface dataHandler, PrintInterface print) {
+        super(args);
+        this.dataHandler = dataHandler;
+        this.refuelRepository = RefuelRepository.getInstance(dataHandler);
+        this.print = print;
     }
 
     public Liter getLiters() {
@@ -68,6 +78,7 @@ public class RefuelInterpreter extends CommandInterpreter {
             case MODIFY -> parseModifyCommands();
             case DELETE -> parseDeleteCommands();
             case READ -> parseReadCommands();
+            case ANALYZE -> parseAnalyzeCommands();
             default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
     }
@@ -128,8 +139,21 @@ public class RefuelInterpreter extends CommandInterpreter {
 
     @Override
     protected void parseAnalyzeCommands() throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'parseAnalyzeCommands'");
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            if (arguments_list.get(index).equals("-d"))
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-ft"))
+                this.fuelType = ArgumentsParser.parseFuelTypeFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-gs"))
+                this.gasStation = ArgumentsParser.parseGasStationFrom(arguments_list.get(++index));
+            // else if (arguments_list.get(index).equals("--totalVolume"))
+                
+            // else if (arguments_list.get(index).equals("--avgPrice"))
+
+            index ++;
+        }
     }
 
     @Override
@@ -150,6 +174,7 @@ public class RefuelInterpreter extends CommandInterpreter {
             case NEW -> refuelRepository.writeRefuel(refuel);
             case DELETE -> refuelRepository.deleteRefuel(refuel);
             case MODIFY -> throw new UnsupportedOperationException("Unimplemented case: " + this.action);
+            case ANALYZE -> AnalyzerWrapper.analyzeFor(refuel, refuelRepository, print);
             default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
     }
