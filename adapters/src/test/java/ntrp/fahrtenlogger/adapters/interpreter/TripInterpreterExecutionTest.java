@@ -3,6 +3,7 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -28,8 +29,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import ntrp.fahrtenlogger.application.AnalyzerWrapper;
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.TripRepository;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
 import ntrp.fahrtenlogger.domain.Entities.Trip;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +45,8 @@ public class TripInterpreterExecutionTest {
     List<Trip> mockedTripList;
     @Mock(name = "action")
     Actions mockedAction;
+    @Mock(name = "print")
+    PrintInterface mockedPrintInterface;
 
     @InjectMocks
     TripInterpreter tripInterpreter;
@@ -131,5 +136,18 @@ public class TripInterpreterExecutionTest {
             tripInterpreter.executeCommands();
         });
         assertEquals("Unimplemented case: " + mockedAction.toString(), exception.getMessage());
+    }
+
+    @Test
+    void executeAnalyzeCommand() {
+        when(mockedAction.ordinal()).thenReturn(Actions.ANALYZE.ordinal());
+
+        try (MockedStatic<AnalyzerWrapper> mockedStaticAnalyzerWrapper = mockStatic(AnalyzerWrapper.class)) {
+            mockedStaticAnalyzerWrapper.when(() -> AnalyzerWrapper.analyzeFor(any(Trip.class), eq(mockedTripRepository), any())).thenAnswer( invocation -> null );
+
+            tripInterpreter.executeCommands();
+
+            mockedStaticAnalyzerWrapper.verify(() -> AnalyzerWrapper.analyzeFor(any(Trip.class), eq(mockedTripRepository), any()));
+        }
     }
 }
