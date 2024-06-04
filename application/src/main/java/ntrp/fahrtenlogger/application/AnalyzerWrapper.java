@@ -8,7 +8,7 @@ import ntrp.fahrtenlogger.application.analyzer.TripAnalyzer;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.Entities.Trip;
 
-public class AnalyzerWrapper {
+public final class AnalyzerWrapper {
     public static void analyzeFor(Refuel refuel, RefuelRepository refuelRepository, PrintInterface print) {
         List<Refuel> refuels = refuelRepository.readRefuels(refuel.getDate(), refuel.getGasStation());
 
