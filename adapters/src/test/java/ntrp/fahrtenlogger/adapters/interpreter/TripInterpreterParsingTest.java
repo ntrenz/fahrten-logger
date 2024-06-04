@@ -368,4 +368,40 @@ class TripInterpreterParsingTest {
         });
         assertEquals("Action nicht definiert: " + action, exception.getMessage());
     }
+
+    @Test
+    void parseCommandAnalyze() {
+        Actions action = Actions.ANALYZE;
+        Place fromPlace = new Place("FROM_PLACE");
+        Place toPlace = new Place("TO_PLACE");
+        String dateString = "01.03.2024";
+        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        Kilometer distance = new Kilometer(5);
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(fromPlace.toString())).thenReturn(fromPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parsePlaceFrom(toPlace.toString())).thenReturn(toPlace);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseKilometerFrom(distance.toString())).thenReturn(distance);
+
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+        commandsList.add("-fp");
+        commandsList.add(fromPlace.toString());
+        commandsList.add("-tp");
+        commandsList.add(toPlace.toString());
+        commandsList.add("-d");
+        commandsList.add(dateString);
+        commandsList.add("-di");
+        commandsList.add(distance.toString());
+
+        tripInterpreter = new TripInterpreter(commandsList, mockedDataHandler);
+
+        tripInterpreter.parseCommands();
+        assertEquals(action, tripInterpreter.getAction());
+        assertEquals(0, tripInterpreter.getId());
+        assertEquals(fromPlace, tripInterpreter.getFromPlace());
+        assertEquals(toPlace, tripInterpreter.getToPlace());
+        assertEquals(date, tripInterpreter.getDate());
+        assertEquals(distance, tripInterpreter.getDistance());
+    }
 }

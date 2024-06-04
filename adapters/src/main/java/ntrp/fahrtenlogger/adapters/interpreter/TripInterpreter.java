@@ -3,8 +3,10 @@ package ntrp.fahrtenlogger.adapters.interpreter;
 import java.time.LocalDate;
 import java.util.List;
 
+import ntrp.fahrtenlogger.application.AnalyzerWrapper;
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.TripRepository;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
 import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
@@ -16,6 +18,7 @@ public class TripInterpreter extends CommandInterpreter {
     private Kilometer distance = new Kilometer(0);
     private LocalDate date = LocalDate.now();
     private final DataHandlerInterface dataHandler;
+    private PrintInterface print;
     private TripRepository tripRepository;
     private int id;
 
@@ -23,6 +26,13 @@ public class TripInterpreter extends CommandInterpreter {
         super(args);
         this.dataHandler = dataHandler;
         this.tripRepository = TripRepository.getInstance(dataHandler);
+    }
+
+    public TripInterpreter(List<String> args, DataHandlerInterface dataHandler, PrintInterface print) {
+        super(args);
+        this.dataHandler = dataHandler;
+        this.tripRepository = TripRepository.getInstance(dataHandler);
+        this.print = print;
     }
 
     public Place getFromPlace() {
@@ -61,6 +71,7 @@ public class TripInterpreter extends CommandInterpreter {
             case MODIFY -> parseModifyCommands();
             case DELETE -> parseDeleteCommands();
             case READ -> parseReadCommands();
+            case ANALYZE -> parseAnalyzeCommands();
             default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
 
@@ -126,6 +137,23 @@ public class TripInterpreter extends CommandInterpreter {
     }
 
     @Override
+    protected void parseAnalyzeCommands() throws IllegalArgumentException {
+        this.date = null;
+        int index = 1;
+        while (arguments_list.size() > index) {
+            if (arguments_list.get(index).equals("-fp"))
+                this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-tp"))
+                this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-d"))
+                this.date = ArgumentsParser.parseDateFrom(arguments_list.get(++index));
+            else if (arguments_list.get(index).equals("-di"))
+                this.distance = ArgumentsParser.parseKilometerFrom(arguments_list.get(++index));
+            index++;
+        }
+    }
+
+    @Override
     public String toString() {
         return "TripInterpreter{from_place=" + fromPlace +
                 ", to_place=" + toPlace +
@@ -152,6 +180,7 @@ public class TripInterpreter extends CommandInterpreter {
             case NEW -> tripRepository.writeTrip(trip);
             case DELETE -> tripRepository.deleteTrip(trip);
             case MODIFY -> throw new UnsupportedOperationException("Unimplemented case: " + this.action);
+            case ANALYZE -> AnalyzerWrapper.analyzeFor(trip, tripRepository, print);
             default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
     }

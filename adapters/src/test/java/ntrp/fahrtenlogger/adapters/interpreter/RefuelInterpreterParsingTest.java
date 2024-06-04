@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 
 import ntrp.fahrtenlogger.application.DataHandlerInterface;
 import ntrp.fahrtenlogger.application.RefuelRepository;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
@@ -41,6 +42,8 @@ class RefuelInterpreterParsingTest {
     @Mock(name = "action")
     static Actions mockedAction;
     public static MockedStatic<ArgumentsParser> mockedStaticArgumentsParser;
+    @Mock(name = "print")
+    static PrintInterface mockedPrintInterface;
 
     @InjectMocks
     RefuelInterpreter refuelInterpreter;
@@ -53,6 +56,7 @@ class RefuelInterpreterParsingTest {
             mockedStaticRefuelRepository.when(() -> RefuelRepository.getInstance(mockedDataHandler)).thenReturn(mockedRefuelRepository);
         }
         mockedStaticArgumentsParser = mockStatic(ArgumentsParser.class);
+        mockedPrintInterface = Mockito.mock(PrintInterface.class);
     }
 
     @AfterAll
@@ -251,5 +255,36 @@ class RefuelInterpreterParsingTest {
             refuelInterpreter.parseCommands();
         });
         assertEquals("Action nicht definiert: " + action, exception.getMessage());
+    }
+
+    @Test
+    void parseCommandAnalyze() {
+        Actions action = Actions.ANALYZE;
+        String dateString = "01.03.2024";
+        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        FuelType fuelType = FuelType.E5;
+        GasStation gasStation = new GasStation("Tanke");
+
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseDateFrom(dateString)).thenReturn(date);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseFuelTypeFrom(fuelType.toString())).thenReturn(fuelType);
+        mockedStaticArgumentsParser.when(() -> ArgumentsParser.parseGasStationFrom(gasStation.toString())).thenReturn(gasStation);
+
+        List<String> commandsList = new ArrayList<>();
+        commandsList.add(action.toString().toLowerCase());
+        commandsList.add("-d");
+        commandsList.add(dateString);
+        commandsList.add("-ft");
+        commandsList.add(fuelType.toString());
+        commandsList.add("-gs");
+        commandsList.add(gasStation.getName());
+        refuelInterpreter = new RefuelInterpreter(commandsList, mockedDataHandler);
+
+        refuelInterpreter.parseCommands();
+
+        assertEquals(action, refuelInterpreter.getAction());
+        assertEquals(date, refuelInterpreter.getDate());
+        assertEquals(fuelType, refuelInterpreter.getFuelType());
+        assertEquals(gasStation, refuelInterpreter.getGasStation());
+        assertEquals(0, refuelInterpreter.getId());
     }
 }

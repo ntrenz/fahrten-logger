@@ -1,10 +1,9 @@
-package ntrp.fahrtenlogger.plugins;
+package ntrp.fahrtenlogger.application.analyzer;
 
 import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.Entities.Trip;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
 
-import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,7 +24,7 @@ public class TripAnalyzer {
     /**
      * Print instance used for pretty-printing output.
      */
-    private final Print print;
+    private final PrintInterface print;
 
     /**
      * Formatter for dates.
@@ -37,9 +36,9 @@ public class TripAnalyzer {
      *
      * @param trips the list of trips to be analyzed.
      */
-    public TripAnalyzer(List<Trip> trips) {
+    public TripAnalyzer(List<Trip> trips, PrintInterface printObject) {
         this.trips = trips;
-        print = Print.getInstance();
+        print = printObject;
         dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
     }
 
@@ -85,27 +84,27 @@ public class TripAnalyzer {
         Kilometer totalDistance = getTotalDistance(filteredTrips);
 
         StringBuilder analysis = new StringBuilder();
-        analysis.append(print.bold(print.color(String.valueOf(count), Color.ORANGE)));
+        analysis.append(print.bold(print.color(String.valueOf(count), PrintColors.ORANGE)));
         analysis.append(count == 1 ? " trip" : " trips");
         analysis.append(" recorded");
 
         if (fromPlaceProvided) {
             analysis.append(" from ");
-            analysis.append(print.bold(print.color(from.toString(), Color.ORANGE)));
+            analysis.append(print.bold(print.color(from.toString(), PrintColors.ORANGE)));
         }
 
         if (toPlaceProvided) {
             analysis.append(" to ");
-            analysis.append(print.bold(print.color(to.toString(), Color.ORANGE)));
+            analysis.append(print.bold(print.color(to.toString(), PrintColors.ORANGE)));
         }
 
         if (dateProvided) {
             analysis.append(" on ");
-            analysis.append(print.bold(print.color(dateTimeFormatter.format(date), Color.ORANGE)));
+            analysis.append(print.bold(print.color(dateTimeFormatter.format(date), PrintColors.ORANGE)));
         }
 
         analysis.append(" with a total distance of ");
-        analysis.append(print.bold(print.color(totalDistance.format(), Color.ORANGE)));
+        analysis.append(print.bold(print.color(totalDistance.format(), PrintColors.ORANGE)));
 
         return analysis.toString();
     }

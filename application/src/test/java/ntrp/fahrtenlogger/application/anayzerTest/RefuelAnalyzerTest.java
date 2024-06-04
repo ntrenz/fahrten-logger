@@ -1,19 +1,62 @@
-package ntrp.fahrtenlogger.plugins;
+package ntrp.fahrtenlogger.application.anayzerTest;
 
+import ntrp.fahrtenlogger.application.analyzer.PrintColors;
+import ntrp.fahrtenlogger.application.analyzer.PrintInterface;
+import ntrp.fahrtenlogger.application.analyzer.RefuelAnalyzer;
 import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Refuel;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Liter;
 import ntrp.fahrtenlogger.domain.data.FuelType;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 class RefuelAnalyzerTest {
+    @Mock
+    static PrintInterface print;
+
+    @InjectMocks
+    RefuelAnalyzer refuelAnalyzer;
+
+    @BeforeAll
+    static void testSetup() {
+        print = Mockito.mock(PrintInterface.class);
+        Mockito.when(print.bold(anyString())).thenReturn(anyString());
+        // Mockito.when(print.color(anyString(), any(PrintColors.class))).thenReturn(anyString());
+        Mockito.when(print.color(anyString(), any(PrintColors.class))).thenReturn("JOCKEL" + "ORANGE");
+    }
+
+    @AfterAll
+    static void testTeardown() {
+        // mockedStaticArgumentsParser.close();
+    }
+
+    @BeforeEach
+    void methodSetup() {
+        // mockedDataHandler = Mockito.mock(DataHandlerInterface.class);
+    }
+
+    @AfterEach
+    void methodTeardown() {
+        // reset(mockedDataHandler);
+        refuelAnalyzer = null;
+    }
 
     @Test
     void getTotalVolume() {
@@ -21,7 +64,7 @@ class RefuelAnalyzerTest {
         refuels.add(new Refuel(1, new Liter(23.4), new Euro(1.68), FuelType.E5, new GasStation("Karlsruhe"), LocalDate.of(2024, 2, 23)));
         refuels.add(new Refuel(2, new Liter(56.4), new Euro(1.75), FuelType.E10, new GasStation("Mannheim"), LocalDate.of(2023, 12, 12)));
 
-        RefuelAnalyzer refuelAnalyzer = new RefuelAnalyzer(refuels);
+        refuelAnalyzer = new RefuelAnalyzer(refuels, print);
 
         assertEquals(new Liter(23.4+56.4), refuelAnalyzer.getTotalVolume(refuels));
         assertEquals(new Liter(0), refuelAnalyzer.getTotalVolume(new ArrayList<>()));
@@ -33,7 +76,7 @@ class RefuelAnalyzerTest {
         refuels.add(new Refuel(1, new Liter(23.4), new Euro(1.68), FuelType.E5, new GasStation("Karlsruhe"), LocalDate.of(2024, 2, 23)));
         refuels.add(new Refuel(2, new Liter(56.4), new Euro(1.75), FuelType.E10, new GasStation("Mannheim"), LocalDate.of(2023, 12, 12)));
 
-        RefuelAnalyzer refuelAnalyzer = new RefuelAnalyzer(refuels);
+        refuelAnalyzer = new RefuelAnalyzer(refuels, print);
 
         assertEquals(new Euro((1.68+1.75)/2), refuelAnalyzer.getAveragePricePerLiter(refuels));
         assertEquals(new Euro(0), refuelAnalyzer.getAveragePricePerLiter(new ArrayList<>()));
@@ -50,7 +93,7 @@ class RefuelAnalyzerTest {
         refuels.add(new Refuel(6, new Liter(65.2), new Euro(1.67), FuelType.E5, new GasStation("Hamburg"), LocalDate.of(2024, 1, 7)));
         refuels.add(new Refuel(7, new Liter(33.3), new Euro(1.71), FuelType.DIESEL, new GasStation("Mannheim"), LocalDate.of(2024, 1, 7)));
 
-        RefuelAnalyzer refuelAnalyzer = new RefuelAnalyzer(refuels);
+        refuelAnalyzer = new RefuelAnalyzer(refuels, print);
 
         String query1 = refuelAnalyzer.getAnalysis(new GasStation("Karlsruhe"), null);
         String query2 = refuelAnalyzer.getAnalysis(new GasStation("Karlsruhe"), LocalDate.of(2024, 2, 23));

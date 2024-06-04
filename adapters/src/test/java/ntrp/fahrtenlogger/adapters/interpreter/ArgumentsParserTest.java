@@ -10,6 +10,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import ntrp.fahrtenlogger.domain.Entities.GasStation;
 import ntrp.fahrtenlogger.domain.Entities.Place;
 import ntrp.fahrtenlogger.domain.ValueObjects.Euro;
 import ntrp.fahrtenlogger.domain.ValueObjects.Kilometer;
@@ -155,5 +156,32 @@ public class ArgumentsParserTest {
         Place placeTest = ArgumentsParser.parsePlaceFrom(place.toString());
 
         assertEquals(place, placeTest);
+    }
+
+    @Test
+    void testParsePlaceFromEmptyString() {
+        String emptyPlaceName = "";
+
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ArgumentsParser.parsePlaceFrom(emptyPlaceName);
+        });
+    }
+
+    @Test
+    void testParseGasStation() {
+        GasStation gasStation = new GasStation("PLACE");
+
+        GasStation gasStationTest = ArgumentsParser.parseGasStationFrom(gasStation.toString());
+
+        assertEquals(gasStation, gasStationTest);
+    }
+
+    @Test
+    void testParseGasStationEmptyString() {
+        String emptyGasStationName = "";
+
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ArgumentsParser.parseGasStationFrom(emptyGasStationName);
+        });
     }
 }
