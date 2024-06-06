@@ -16,7 +16,7 @@ public final class ArgumentsParser {
         try {
             return new Liter(Double.parseDouble(volume));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Liter must be a number! (Number format for Liter is: X.X)");
         }
     }
 
@@ -24,7 +24,7 @@ public final class ArgumentsParser {
         try {
             return new Euro(Double.parseDouble(amount));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Currency (EURO) must be a number! (Number format for EURO is: X.X)");
         }
     }
 

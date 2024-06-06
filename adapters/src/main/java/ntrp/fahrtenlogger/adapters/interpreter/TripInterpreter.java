@@ -186,6 +186,6 @@ public class TripInterpreter extends CommandInterpreter {
     }
 
     public static String getHelp() {
-        return "TRIP: creates, updates or deletes a trip. A trip is a traveled distance between two places.\n---- arguments:\n\tnew <from place> <to place> <-di <distance>:?> <-d <date>:?>\n\tdelete\n\tread <-fp <from place>:?> <-tp <to place>:?> <-d <date>:?>\n----";
+        return "TRIP: creates, updates or deletes a trip. A trip is a traveled distance between two places.\n---- arguments:\n\tnew <from place> <to place> <-di <distance>:?> <-d <date>:?>\n\tdelete <-d <Date>:?> <-fp <From Place>:?> <-tp <To Place>:?> <-id <ID>:?>\n\tread <-fp <from place>:?> <-tp <to place>:?> <-d <date>:?>\n\tanalyze\n----";
     }
 }
