@@ -59,13 +59,30 @@ public class TripInterpreter extends CommandInterpreter {
         return action;
     }
 
+    private void validateArguments() throws IllegalArgumentException {
+        if (arguments_list.isEmpty()) {
+            throw new IllegalArgumentException("Not enough Parameters!");
+        }
+        this.action = parseAction(arguments_list.get(0));
+
+        switch (this.action) {
+            case NEW -> {
+                if (arguments_list.size() < num_of_mandatory_arguments)
+                    throw new IllegalArgumentException("Nicht genügend Parameter!");
+            }
+            case MODIFY -> {}
+            case DELETE -> {}
+            case READ -> {}
+            case ANALYZE -> {}
+            default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
+        }
+    }
+
     @Override
     public void parseCommands() {
         // command-structure:
         // trip <new:modify:delete> <from> <to> <-di <distance:?>> <-d <date:?>>
-        if (arguments_list.isEmpty())
-            throw new IllegalArgumentException("Not enough Parameters!");
-        this.action = parseAction(arguments_list.get(0));
+        validateArguments(); // Call validation before proceeding.
         switch (this.action) {
             case NEW -> parseNewCommands();
             case MODIFY -> parseModifyCommands();
@@ -74,14 +91,10 @@ public class TripInterpreter extends CommandInterpreter {
             case ANALYZE -> parseAnalyzeCommands();
             default -> throw new IllegalArgumentException("Unexpected value: " + this.action);
         }
-
     }
 
     @Override
     protected void parseNewCommands() throws IllegalArgumentException {
-        if (arguments_list.size() < num_of_mandatory_arguments)
-            throw new IllegalArgumentException("Nicht genügend Parameter!");
-
         this.fromPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(1));
         this.toPlace = ArgumentsParser.parsePlaceFrom(arguments_list.get(2));
         this.id = tripRepository.getNextTripId();
