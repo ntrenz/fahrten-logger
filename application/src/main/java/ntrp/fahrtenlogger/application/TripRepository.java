@@ -88,7 +88,7 @@ public class TripRepository {
      * @param trip The trip to be deleted.
      */
     public void deleteTrip(Trip trip) {
-        if (trip.getId() == this.getNextTripId()) {
+        if (trip.getId() == 0) {
             trips.removeIf(t -> (t.getDate().equals(trip.getDate()) || trip.getDate() == null) && (t.getFrom().equals(trip.getFrom()) || trip.getFrom() == null) && (t.getTo().equals(trip.getTo()) || trip.getTo() == null));
         } else {
             trips.removeIf(t -> t.getId() == trip.getId());
