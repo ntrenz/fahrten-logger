@@ -21,23 +21,22 @@ Der "fahrten-logger" ist eine terminal basierte Anwendung zum Erfassen von Fahrt
 
 Struktur eines Befehls: `<befehl> <sub-befehl:?> <parameter[]:?>`
 
-| Befehl | Sub-Befehl | Beschreibung |
-| - | - | - |
-| `trip` | `new` | Legt einen neuen trip an. Parameter: Stadt Start, Stadt Ziel, Datum?, Distanz? |
-| | `read` | Liest $n$ trips aus, sofern vorhanden. Parameter: |
-| | `update` | Akutalisiert den spezifizierten Trip. Parameter: |
-| | `delete` | Löscht $n$ trips, wenn vorhanden. Parameter:  |
-| `refuel` | `new` ||
-| | `read` | |
-| | `update` | |
-| | `delete` | |
-| `analyze` |||
-| `help` | N/A | Zeigt den allgemeinen Hilfe-Text an. |
-| | `trip` ||
-| | `refuel` | |
-| | `analyze` | |
-| | `exit` | |
-| `exit` | N/A | Speichert die Daten und beendet das Programm. |
+| Befehl | Sub-Befehl | Beschreibung | Befehls-Aufbau |
+| - | - | - | - |
+| `trip` | `new` | Legt einen neuen trip an. Parameter: Stadt Start, Stadt Ziel, Datum?, Distanz? | `trip new <from place> <to place> <-di <distance>:?> <-d <date>:?>` |
+| | `read` | Liest $n$ trips aus, sofern vorhanden. Parameter: | `trip read <-fp <from place>:?> <-tp <to place>:?> <-d <date>:?>` |
+| | `delete` | Löscht $n$ trips, wenn vorhanden. Parameter:  | `trip delete <-d <Date>:?> <-fp <From Place>:?> <-tp <To Place>:?> <-id <ID>:?>` |
+| | `analyze` | Analysiert alle Trips. | `trip analyze` |
+| `refuel` | `new` | Legt einen neuen Tankvorgang an. | `refuel new <amount> <price> <-d <date:?>> <-ft <fuel_type:?>>` |
+| | `read` | Liest alle Tankvorgänge die den Parametern entsprechen. | `refuel read <-d <date>:?> <-ft <Fuel Type>:?>` |
+| | `delete` | Löscht $n$ trips, wenn vorhanden. | `refuel delete <-d <date>:?> <-id <ID>:?>` |
+| | `analyze` | Analysiert alle Tankvorgänge. | `refuel analyze` |
+| `help` | N/A | Zeigt den allgemeinen Hilfe-Text an. | |
+| | `trip` || |
+| | `refuel` | | |
+| | `analyze` | | |
+| | `exit` | | |
+| `exit` | N/A | Speichert die Daten und beendet das Programm. | |
 
 ## Architektur
 

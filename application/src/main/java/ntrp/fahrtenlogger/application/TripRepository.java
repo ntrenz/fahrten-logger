@@ -5,6 +5,7 @@ import ntrp.fahrtenlogger.domain.Entities.Trip;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 /**
@@ -52,12 +53,12 @@ public class TripRepository {
      * @return The ID for the next trip.
      */
     public int getNextTripId() {
-        int next_id = 1;
-        for (Trip trip : trips) {
-            if (trip.getId() >= next_id)
-                next_id = trip.getId() + 1;
+        OptionalInt highest_id = trips.stream().mapToInt(Trip::getId).max();
+        if (highest_id.isPresent()) {
+            return highest_id.getAsInt() + 1;
+        } else {
+            return 1;
         }
-        return next_id;
     }
 
     /**

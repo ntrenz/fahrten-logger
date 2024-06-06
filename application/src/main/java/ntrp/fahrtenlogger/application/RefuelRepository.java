@@ -5,6 +5,7 @@ import ntrp.fahrtenlogger.domain.Entities.Refuel;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 /**
@@ -52,12 +53,12 @@ public class RefuelRepository {
      * @return The ID for the next refuel.
      */
     public int getNextRefuelId() {
-        int next_id = 1;
-        for (Refuel refuel : refuels) {
-            if (refuel.getId() >= next_id)
-                next_id = refuel.getId() + 1;
+        OptionalInt highest_id = refuels.stream().mapToInt(Refuel::getId).max();
+        if (highest_id.isPresent()) {
+            return highest_id.getAsInt() + 1;
+        } else {
+            return 1;
         }
-        return next_id;
     }
 
     /**
