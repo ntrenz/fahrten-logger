@@ -15,7 +15,7 @@
 
 Dieses Projekt ist im Rahmen der Vorlesung Advanced Software Engineering entstanden. Es dient als Leistungsnachweis.
 
-Der "fahrten-logger" ist eine terminal basierte Anwendung zum Erfassen von Fahrten von A nach B, Tankvorägngen und der Analyse dieser Fahrten nach bestimmten Kriterien. Durch die Eingabe von Befehlen werden die Eingabedaten verarbeitet und in CSV-Dateien gespeichert (diese können dann mit professionellen Tools wie Excel anaylsiert werden). Eine grundlegende Analyse der Daten wird ebenfalls in Form von Befehlen bereitsgestellt.
+Der "fahrten-logger" ist eine terminal basierte Anwendung zum Erfassen von Fahrten von A nach B, Tankvorgängen und der Analyse dieser Fahrten nach bestimmten Kriterien. Durch die Eingabe von Befehlen werden die Eingabedaten verarbeitet und in CSV-Dateien gespeichert (diese können dann mit professionellen Tools wie Excel analysiert werden). Eine grundlegende Analyse der Daten wird ebenfalls in Form von Befehlen bereitgestellt.
 
 ### Befehle
 

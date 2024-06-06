@@ -88,7 +88,7 @@ public class RefuelRepository {
      * @param refuel The refuel to be deleted.
      */
     public void deleteRefuel(Refuel refuel) {
-        if (refuel.getId() == this.getNextRefuelId()) {
+        if (refuel.getId() == 0) {
             refuels.removeIf(r -> (r.getDate().equals(refuel.getDate()) || refuel.getDate() == null));
         } else {
             refuels.removeIf(r -> r.getId() == refuel.getId());
