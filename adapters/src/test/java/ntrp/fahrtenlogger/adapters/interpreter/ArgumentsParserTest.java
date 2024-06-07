@@ -43,6 +43,16 @@ public class ArgumentsParserTest {
     }
 
     @Test
+    void testParseDateFromWrongDate() {
+        String dateString = "01.13.2024";
+
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ArgumentsParser.parseDateFrom(dateString);
+        });
+        assertEquals("Date could not be parsed! (Date format must be: DD.MM.YYYY)", exception.getMessage());
+    }
+
+    @Test
     void testParseEuroFrom() {
         Euro euro = new Euro(20);
 
