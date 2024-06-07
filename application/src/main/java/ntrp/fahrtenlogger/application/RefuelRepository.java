@@ -53,12 +53,7 @@ public class RefuelRepository {
      * @return The ID for the next refuel.
      */
     public int getNextRefuelId() {
-        OptionalInt highest_id = refuels.stream().mapToInt(Refuel::getId).max();
-        if (highest_id.isPresent()) {
-            return highest_id.getAsInt() + 1;
-        } else {
-            return 1;
-        }
+        return refuels.stream().mapToInt(Refuel::getId).max().orElse(0) + 1;
     }
 
     /**
