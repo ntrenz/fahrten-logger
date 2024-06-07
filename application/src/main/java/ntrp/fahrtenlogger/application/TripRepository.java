@@ -53,12 +53,7 @@ public class TripRepository {
      * @return The ID for the next trip.
      */
     public int getNextTripId() {
-        OptionalInt highest_id = trips.stream().mapToInt(Trip::getId).max();
-        if (highest_id.isPresent()) {
-            return highest_id.getAsInt() + 1;
-        } else {
-            return 1;
-        }
+        return trips.stream().mapToInt(Trip::getId).max().orElse(0) + 1;
     }
 
     /**
